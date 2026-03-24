@@ -1,17 +1,21 @@
 """
 Launch Advisor Agent — 펀딩 트렌드 MVP
-트렌드 분석 결과를 바탕으로 상품 컨셉 + 펀딩 페이지 HTML + SNS 카피 자동 생성
+트렌드 분석 결과를 바탕으로 실제 데이터 기반 기획서 + 플랫폼 등록 초안 자동 생성
 
 파이프라인:
   Step1: trend_analysis → concepts JSON (3개)
-  Step2: concepts top1 → 펀딩 페이지 HTML  ─┐ 병렬 (ThreadPoolExecutor)
-  Step3: concepts top1 → SNS 카피            ─┘
+  Step2: top1 컨셉 + 실제 유사 성공 사례 → 기획서 (MD)  ─┐ 병렬
+  Step3: top1 컨셉 + 실제 유사 성공 사례 → 등록 초안 (MD) ─┤
+  Step4: top1 컨셉 + SNS 카피 (JSON)                       ─┘
+  Step5: 기획서 + 등록 초안 → GitHub Pages용 HTML (실제 수치)
 
-top1 선택 기준: expected_success_rate 최대값 (config: top_concept_metric)
+top1 선택 기준: expected_success_rate 최대값
 
 출력:
   data/reports/concepts_YYYYMMDD.json
-  data/pages/funding_page_YYYYMMDD.html
+  data/reports/planning_YYYYMMDD.md      ← 내부 기획서 (실제 수치 기반)
+  data/reports/launch_draft_YYYYMMDD.md  ← 플랫폼 등록 초안
+  data/pages/funding_page_YYYYMMDD.html  ← GitHub Pages (실제 수치 기반)
   data/pages/sns_copy_YYYYMMDD.json
 """
 
@@ -19,7 +23,7 @@ import json
 import logging
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from glob import glob
 from typing import Optional
@@ -28,8 +32,10 @@ from utils.claude_client import call_claude
 
 logger = logging.getLogger(__name__)
 
-HTML_MIN_LENGTH = 3000  # 최소 HTML 길이 (미달 시 재시도)
+HTML_MIN_LENGTH = 3000
 
+
+# ── 데이터 로더 ──────────────────────────────────────────────────────────────
 
 def _load_latest(directory: str, prefix: str) -> Optional[dict]:
     pattern = os.path.join(directory, f"{prefix}_*.json")
@@ -40,6 +46,32 @@ def _load_latest(directory: str, prefix: str) -> Optional[dict]:
         return json.load(f)
 
 
+def _load_latest_list(directory: str, prefix: str) -> list:
+    """unified_*.json 같은 리스트 JSON 로드"""
+    pattern = os.path.join(directory, f"{prefix}_*.json")
+    files = sorted(glob(pattern), reverse=True)
+    if not files:
+        return []
+    with open(files[0], "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data if isinstance(data, list) else []
+
+
+def _get_similar_projects(processed_dir: str, goods_category: str, top_n: int = 5) -> list:
+    """실제 수집 데이터에서 동일 카테고리 성공 사례 추출"""
+    all_projects = _load_latest_list(processed_dir, "unified")
+    if not all_projects:
+        return []
+    similar = [
+        p for p in all_projects
+        if p.get("goods_category") == goods_category and p.get("achieved_rate", 0) >= 100
+    ]
+    similar.sort(key=lambda x: x.get("achieved_rate", 0), reverse=True)
+    return similar[:top_n]
+
+
+# ── 프롬프트 빌더 ────────────────────────────────────────────────────────────
+
 def _build_concepts_prompt(analysis: dict, concepts_count: int = 3) -> str:
     summary = analysis.get("summary", {})
     by_cat = analysis.get("by_goods_category", {})
@@ -49,40 +81,40 @@ def _build_concepts_prompt(analysis: dict, concepts_count: int = 3) -> str:
     hot_cats = sorted(
         by_cat.items(),
         key=lambda x: x[1].get("avg_trend_score", 0),
-        reverse=True
+        reverse=True,
     )[:5]
 
-    hot_lines = "\n".join([
-        f"  - {cat}: 성공률 {data.get('success_rate_pct', 0)}%, "
-        f"TREND_SCORE {data.get('avg_trend_score', 0)}, "
-        f"건수 {data.get('count', 0)}건"
-        for cat, data in hot_cats
-    ])
-
-    top_lines = "\n".join([
-        f"  {i+1}. {p['title'][:40]} — {p.get('goods_category', '기타')}, "
-        f"달성률 {p.get('achieved_rate', 0)}%, 후원자 {p.get('backers', 0)}명"
-        for i, p in enumerate(top_projects)
-    ])
-
-    red_ocean = (
-        ", ".join([w["goods_category"] for w in saturation])
-        if saturation else "없음"
+    hot_lines = "\n".join(
+        f"  - {cat}: 트렌드점수 {d.get('avg_trend_score', 0):.1f}, "
+        f"성공률 {d.get('success_rate', 0):.0f}%, "
+        f"평균달성률 {d.get('avg_achieved_rate', 0):.0f}%, "
+        f"평균후원자 {d.get('avg_backers', 0):.0f}명"
+        for cat, d in hot_cats
     )
 
-    return f"""다음은 텀블벅·와디즈 굿즈 펀딩 트렌드 분석 결과입니다.
-이 데이터를 기반으로 지금 만들면 잘 팔릴 굿즈 상품 컨셉 {concepts_count}개를 제안해주세요.
+    top_lines = "\n".join(
+        f"  - {p.get('title', '')} | {p.get('goods_category', '')} | "
+        f"달성률 {p.get('achieved_rate', 0):.0f}% | 후원자 {p.get('backers', 0)}명"
+        for p in top_projects
+    )
 
-## 트렌드 분석 요약
-- 총 분석 프로젝트: {summary.get('total_projects', 0)}개
-- 전체 성공률: {summary.get('success_rate_pct', 0)}%
-- 레드오션 경고 카테고리: {red_ocean}
+    saturation_text = "\n".join(f"  - {w}" for w in saturation) if saturation else "  없음"
+
+    return f"""당신은 크라우드펀딩 굿즈 트렌드 전문가입니다.
+아래 이번 주 실제 수집·분석 데이터를 바탕으로 신규 펀딩 상품 컨셉을 제안해주세요.
+
+## 이번 주 수집 현황
+- 총 수집 프로젝트: {summary.get('total_projects', 0)}개
+- 분석 기간: {summary.get('collected_at', '이번 주')}
 
 ## HOT 굿즈 카테고리 TOP 5 (TREND_SCORE 순)
 {hot_lines}
 
 ## 참조 프로젝트 TOP 5
 {top_lines}
+
+## 포화 경고 카테고리
+{saturation_text}
 
 ---
 {concepts_count}개의 상품 컨셉을 다음 JSON 배열 형식으로만 반환해주세요.
@@ -104,100 +136,131 @@ def _build_concepts_prompt(analysis: dict, concepts_count: int = 3) -> str:
 ]"""
 
 
-def _build_html_prompt(concept: dict) -> str:
-    return f"""다음 굿즈 상품 컨셉으로 크라우드펀딩 상세 페이지 HTML을 작성해주세요.
+def _format_similar_projects(projects: list) -> str:
+    if not projects:
+        return "수집된 동일 카테고리 성공 사례 없음"
+    lines = []
+    for p in projects:
+        min_r = p.get("min_reward_price", 0)
+        max_r = p.get("max_reward_price", 0)
+        price_str = f"{min_r:,}~{max_r:,}원" if min_r and max_r else (f"{min_r:,}원~" if min_r else "가격정보 없음")
+        lines.append(
+            f"- {p.get('title', '')} | 달성률 {p.get('achieved_rate', 0):.0f}% | "
+            f"후원자 {p.get('backers', 0):,}명 | 리워드 {price_str}"
+        )
+    return "\n".join(lines)
+
+
+def _build_planning_prompt(concept: dict, similar_projects: list, analysis: dict) -> str:
+    cat = concept.get("goods_category", "")
+    cat_data = analysis.get("by_goods_category", {}).get(cat, {})
+    wow = analysis.get("week_over_week", {}).get(cat, {})
+    projects_text = _format_similar_projects(similar_projects)
+
+    return f"""당신은 크라우드펀딩 전문 기획자입니다.
+아래 실제 수집 데이터를 근거로 내부 검토용 기획서를 작성해주세요.
+모든 수치는 반드시 아래 실제 데이터에서 인용하세요. 근거 없는 수치를 만들지 마세요.
+
+## 트렌드 분석 데이터 (실제 수집)
+- 카테고리: {cat}
+- 트렌드 점수: {cat_data.get('avg_trend_score', 0):.1f}점
+- 전주 대비: {wow.get('delta', 0):+.1f}점 ({wow.get('direction', 'flat')})
+- 카테고리 평균 달성률: {cat_data.get('avg_achieved_rate', 0):.0f}%
+- 카테고리 평균 후원자: {cat_data.get('avg_backers', 0):.0f}명
+- 펀딩 성공률(100% 달성): {cat_data.get('success_rate', 0):.0f}%
+- 이번 주 신규 프로젝트 수: {cat_data.get('project_count', 0)}개
+
+## 동일 카테고리 실제 성공 사례 (이번 주 수집)
+{projects_text}
+
+## 제안 상품 컨셉
+- 상품명: {concept.get('concept_name', '')}
+- 타겟: {concept.get('target_audience', '')}
+- 설명: {concept.get('product_description', '')}
+- 가격대: {concept.get('price_range', '')}
+- 목표금액: {concept.get('funding_goal', '')}
+- 차별화: {concept.get('differentiation', '')}
+- 선정 근거: {concept.get('trend_basis', '')}
+
+---
+다음 구조로 마크다운 기획서를 작성하세요:
+
+# {concept.get('concept_name', '상품명')} — 크라우드펀딩 기획서
+
+## 1. 기회 근거
+(트렌드 점수·전주 대비 변화를 인용해 왜 지금 이 아이템인지 설명)
+
+## 2. 시장 현황
+(위 실제 성공 사례를 분석 — 달성률 범위, 후원자 규모, 리워드 가격대 패턴)
+
+## 3. 상품 전략
+(가격 포지셔닝, 리워드 구성 전략 — 성공 사례 수치 기반 근거 포함)
+
+## 4. 예상 수치 (성공 사례 기반)
+- 추천 목표금액: (근거 포함)
+- 추천 최저 리워드: (근거 포함)
+- 예상 달성률 범위: (카테고리 평균 기반)
+- 예상 후원자 수: (카테고리 평균 기반)
+
+## 5. 리스크 & 대응
+- 포화도: (신규 프로젝트 수 기반)
+- 경쟁 리스크: (성공 사례 분석 기반)
+- 대응 전략:
+
+## 6. GO / NO-GO 권고
+**GO** 또는 **NO-GO** — 한 문장 근거 (반드시 실제 수치 인용)"""
+
+
+def _build_draft_prompt(concept: dict, similar_projects: list) -> str:
+    projects_text = _format_similar_projects(similar_projects[:3])
+
+    return f"""당신은 크라우드펀딩 플랫폼(텀블벅·와디즈) 등록 전문가입니다.
+아래 정보를 바탕으로 실제 등록 가능한 프로젝트 초안을 작성해주세요.
 
 ## 상품 컨셉
 - 상품명: {concept.get('concept_name', '')}
 - 카테고리: {concept.get('goods_category', '')}
-- 타겟 고객: {concept.get('target_audience', '')}
-- 상품 설명: {concept.get('product_description', '')}
-- 가격 범위: {concept.get('price_range', '')}
-- 목표금액: {concept.get('funding_goal', '')}
-- 차별화 포인트: {concept.get('differentiation', '')}
+- 타겟: {concept.get('target_audience', '')}
+- 설명: {concept.get('product_description', '')}
+- 가격대: {concept.get('price_range', '')}
+- 차별화: {concept.get('differentiation', '')}
 
-## 색상 시스템 (반드시 이 CSS 변수 사용 — 임의 색상 금지)
-```css
---color-primary: #FF5A1F;
---color-primary-hover: #E04A10;
---color-surface: #F7F8FA;
---color-border: #E2E8F0;
---color-text: #1A202C;
---color-text-sub: #4A5568;
---color-text-muted: #718096;
---color-success: #38A169;
-```
+## 참고 성공 사례 (실제 수집)
+{projects_text}
 
-## 타입 스케일 (Major Third 1.25 기반 — 임의 font-size 금지)
-- 히어로 메인 타이틀: 2.441rem / 700
-- 히어로 서브: 1.953rem / 600
-- 섹션 타이틀: 1.563rem / 700
-- 소제목: 1.25rem / 600
-- 본문: 1rem / 400, line-height: 1.7
-- 보조: 0.875rem
-- 메타/뱃지: 0.75rem
+---
+다음 구조로 마크다운 초안을 작성하세요:
 
-## 섹션 구성 (이 순서 필수)
-1. **히어로** — 상품명 + 1줄 훅 카피 + 상품 이미지 + "지금 후원하기" CTA
-2. **펀딩 현황 위젯** — 달성률(%) + 진행 바 + 후원자 수 + 남은 기간(D-day) + 목표 금액
-3. **상품 소개** — 차별화 포인트 3개 (이미지+텍스트, 1열 세로 배치)
-4. **리워드 구성** — 카드 2-3개 (기본/스탠다드/프리미엄)
-5. **제작자 소개** — 브랜드명 + 소개 + 이전 프로젝트 이력
-6. **FAQ** — 아코디언 4-5개 (반드시 "펀딩 미달성 환불", "배송 일정" 포함)
-7. **하단 고정 CTA 바** — position: sticky; bottom: 0 (모바일 항상 노출)
+# 텀블벅 / 와디즈 등록 초안
 
-## 펀딩 현황 위젯 (필수 요소)
-```html
-<!-- 예시 구조 — 실제 수치는 컨셉에 맞게 조정 -->
-<div class="funding-widget">
-  <div class="funding-progress-bar" style="width: 127%"></div>
-  <div class="funding-stats">
-    <div>127% 달성</div>
-    <div>1,284명 후원</div>
-    <div>D-7 남음</div>
-    <div>목표 3,000,000원</div>
-  </div>
-</div>
-```
+## 프로젝트 제목 후보 (3개)
+1.
+2.
+3.
 
-## 이미지 플레이스홀더 (점선 dashed 테두리 금지)
-- 배경: var(--color-surface), 테두리: 1px solid var(--color-border)
-- 상품 관련 이모지 크게 + 상품명 텍스트 조합
+## 한 줄 소개 (50자 이내)
 
-## 신뢰 요소 (Trust Signals — 빠지면 안 됨)
-- CTA 근처에 "펀딩 미달성 시 전액 환불" 문구
-- "결제는 펀딩 성공 후 진행됩니다" 안내
-- FAQ에 교환/환불 정책 항목
+## 프로젝트 스토리 (본문)
+(실제 등록 가능 수준. 최소 600자. 왜 이 상품인지, 누구를 위한지, 특징, 제작 스토리)
 
-## 인터랙션 상태
-- 리워드 카드 hover: border-color 강조 + translateY(-2px)
-- 버튼 active: transform: scale(0.98)
-- FAQ 아코디언: CSS transition 0.25s ease (JS 불필요 — details/summary 태그 활용)
+## 리워드 구성
+| 등급 | 가격 | 구성품 | 한정 수량 |
+|------|------|--------|-----------|
+| 얼리버드 | | | 100개 |
+| 기본 | | 제한 없음 |
+| 스페셜 | | | 50개 |
 
-## 반응형 규칙
-- 320px: 단일 컬럼, 히어로 타이틀 1.563rem, padding 16px
-- 768px+: 히어로 2컬럼 (좌:텍스트, 우:이미지), padding 24px
-- 1200px+: max-width 1200px 중앙 고정
-- 펀딩 현황: 320px에서 2×2 그리드, 768px+에서 4열 1행
+## 태그 / 키워드 (5개)
 
-## 접근성
-- CTA 버튼 최소 44×44px
-- outline: 2px solid var(--color-primary); outline-offset: 2px (outline:none 금지)
-- <html lang="ko">
-- 이미지에 alt 속성 필수
+## FAQ
+**Q. 배송은 언제 시작되나요?**
+A.
 
-## 카피 톤
-- 존댓말 (~입니다, ~해요체)
-- CTA: "지금 후원하기" (구매하기 X)
-- word-break: keep-all (한국어 단어 분리 방지)
+**Q. 펀딩 미달성 시 어떻게 되나요?**
+A. 목표금액 미달성 시 결제가 진행되지 않으며 전액 환불됩니다.
 
-## 금지 패턴 (AI Slop)
-- 보라/인디고 그라디언트 히어로 배경 금지
-- 이모지+파란 그라디언트 원형 creator avatar 금지
-- 맥락 없는 3열 이모지 아이콘 카드 금지
-- 모든 박스에 동일한 box-shadow 반복 금지
-
-완전한 HTML만 출력하세요. 마크다운 코드펜스 없이 <!DOCTYPE html>부터 </html>까지만 반환합니다."""
+**Q. 교환·환불 정책은?**
+A."""
 
 
 def _build_sns_prompt(concept: dict) -> str:
@@ -221,45 +284,170 @@ def _build_sns_prompt(concept: dict) -> str:
 }}"""
 
 
+def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, analysis: dict) -> str:
+    """기획서 + 등록 초안을 GitHub Pages용 HTML로 변환 (실제 수치 기반)"""
+    cat = concept.get("goods_category", "")
+    cat_data = analysis.get("by_goods_category", {}).get(cat, {})
+    wow = analysis.get("week_over_week", {}).get(cat, {})
+    direction_symbol = {"up": "↑", "down": "↓", "flat": "→"}.get(wow.get("direction", "flat"), "→")
+
+    return f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>펀딩 트렌드 인사이트 — {concept.get('concept_name', '')}</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"/>
+  <style>
+    :root {{
+      --primary: #FF5A1F;
+      --surface: #F7F8FA;
+      --border: #E2E8F0;
+      --text: #1A202C;
+      --text-sub: #4A5568;
+      --text-muted: #718096;
+      --success: #38A169;
+    }}
+    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+    body {{ font-family: 'Pretendard Variable', -apple-system, sans-serif; background: #fff; color: var(--text); line-height: 1.7; word-break: keep-all; }}
+    .container {{ max-width: 860px; margin: 0 auto; padding: 0 20px; }}
+    header {{ background: var(--text); color: #fff; padding: 20px 0; }}
+    header .container {{ display: flex; align-items: center; justify-content: space-between; }}
+    header h1 {{ font-size: 1rem; font-weight: 600; opacity: .85; }}
+    header .date {{ font-size: .8rem; opacity: .5; }}
+    .hero {{ background: var(--surface); border-bottom: 1px solid var(--border); padding: 48px 0 36px; }}
+    .hero h2 {{ font-size: 1.953rem; font-weight: 700; margin-bottom: 8px; }}
+    .hero .category {{ display: inline-block; background: var(--primary); color: #fff; font-size: .75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 16px; }}
+    .stats {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 28px; }}
+    @media(min-width: 600px) {{ .stats {{ grid-template-columns: repeat(4, 1fr); }} }}
+    .stat-card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }}
+    .stat-card .val {{ font-size: 1.563rem; font-weight: 700; color: var(--primary); }}
+    .stat-card .lbl {{ font-size: .75rem; color: var(--text-muted); margin-top: 4px; }}
+    .wow {{ font-size: .8rem; color: var(--success); font-weight: 600; }}
+    .tabs {{ display: flex; border-bottom: 2px solid var(--border); margin: 36px 0 0; }}
+    .tab {{ padding: 12px 20px; font-size: .95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: .2s; }}
+    .tab.active {{ color: var(--primary); border-bottom-color: var(--primary); }}
+    .tab-content {{ display: none; padding: 32px 0 60px; }}
+    .tab-content.active {{ display: block; }}
+    .md-body h1 {{ font-size: 1.563rem; font-weight: 700; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }}
+    .md-body h2 {{ font-size: 1.25rem; font-weight: 700; margin: 28px 0 10px; color: var(--text); }}
+    .md-body p {{ margin-bottom: 14px; color: var(--text-sub); }}
+    .md-body ul, .md-body ol {{ padding-left: 20px; margin-bottom: 14px; color: var(--text-sub); }}
+    .md-body li {{ margin-bottom: 6px; }}
+    .md-body strong {{ color: var(--text); }}
+    .md-body table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: .9rem; }}
+    .md-body th {{ background: var(--surface); padding: 10px 12px; text-align: left; font-weight: 600; border: 1px solid var(--border); }}
+    .md-body td {{ padding: 9px 12px; border: 1px solid var(--border); color: var(--text-sub); }}
+    .md-body blockquote {{ border-left: 3px solid var(--primary); padding-left: 16px; color: var(--text-muted); margin-bottom: 14px; }}
+    .md-body code {{ background: var(--surface); padding: 1px 5px; border-radius: 4px; font-size: .875rem; }}
+    footer {{ background: var(--surface); border-top: 1px solid var(--border); padding: 24px 0; text-align: center; font-size: .8rem; color: var(--text-muted); }}
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>펀딩 트렌드 인사이트</h1>
+    <span class="date">{datetime.now().strftime('%Y년 %m월 %d일')}</span>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="container">
+    <span class="category">{cat}</span>
+    <h2>{concept.get('concept_name', '')}</h2>
+    <p style="color:var(--text-sub);max-width:600px;">{concept.get('product_description', '')[:120]}...</p>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="val">{cat_data.get('avg_trend_score', 0):.0f}점</div>
+        <div class="lbl">트렌드 점수</div>
+        <div class="wow">{direction_symbol} {wow.get('delta', 0):+.1f}</div>
+      </div>
+      <div class="stat-card">
+        <div class="val">{cat_data.get('success_rate', 0):.0f}%</div>
+        <div class="lbl">카테고리 성공률</div>
+      </div>
+      <div class="stat-card">
+        <div class="val">{cat_data.get('avg_achieved_rate', 0):.0f}%</div>
+        <div class="lbl">평균 달성률</div>
+      </div>
+      <div class="stat-card">
+        <div class="val">{cat_data.get('avg_backers', 0):.0f}명</div>
+        <div class="lbl">평균 후원자</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('planning', this)">기획서</div>
+    <div class="tab" onclick="switchTab('draft', this)">등록 초안</div>
+  </div>
+
+  <div id="tab-planning" class="tab-content active">
+    <div class="md-body" id="planning-content"></div>
+  </div>
+  <div id="tab-draft" class="tab-content">
+    <div class="md-body" id="draft-content"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">펀딩 트렌드 인사이트 MVP · 매주 월요일 자동 업데이트</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const planningMd = {json.dumps(planning_md, ensure_ascii=False)};
+const draftMd = {json.dumps(draft_md, ensure_ascii=False)};
+
+document.getElementById('planning-content').innerHTML = marked.parse(planningMd);
+document.getElementById('draft-content').innerHTML = marked.parse(draftMd);
+
+function switchTab(id, el) {{
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}}
+</script>
+</body>
+</html>"""
+
+
+# ── JSON 파서 ────────────────────────────────────────────────────────────────
+
 def _parse_json_response(text: str, label: str = "") -> Optional[dict | list]:
-    """Claude 응답에서 JSON 추출 (코드펜스 제거 + 정규식 fallback)"""
     if not text:
         return None
-
-    # 코드펜스 제거
     cleaned = re.sub(r"```(?:json)?\s*", "", text).replace("```", "").strip()
-
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
         pass
-
-    # 배열 추출 시도
     m = re.search(r"\[.*\]", cleaned, re.DOTALL)
     if m:
         try:
             return json.loads(m.group())
         except json.JSONDecodeError:
             pass
-
-    # 객체 추출 시도
     m = re.search(r"\{.*\}", cleaned, re.DOTALL)
     if m:
         try:
             return json.loads(m.group())
         except json.JSONDecodeError:
             pass
-
     logger.warning(f"[{label}] JSON 파싱 실패")
     return None
 
 
-def _select_top_concept(concepts: list, metric: str = "success_rate") -> dict:
-    """expected_success_rate 기준 top1 선택"""
+def _select_top_concept(concepts: list) -> dict:
     if not concepts:
         return {}
     return max(concepts, key=lambda c: c.get("expected_success_rate", 0))
 
+
+# ── 메인 실행 ────────────────────────────────────────────────────────────────
 
 def run_launch_advisor(
     processed_dir: str = "data/processed",
@@ -281,111 +469,126 @@ def run_launch_advisor(
 
     # ── Step 1: 상품 컨셉 생성 ───────────────────────────────────────
     logger.info("Step1: 상품 컨셉 생성 중...")
-    concepts_prompt = _build_concepts_prompt(analysis, concepts_count)
-    concepts_text = call_claude(concepts_prompt, model=model, max_tokens=max_tokens)
-
+    concepts_text = call_claude(
+        _build_concepts_prompt(analysis, concepts_count),
+        model=model, max_tokens=max_tokens,
+    )
     if not concepts_text:
-        logger.error("Step1: Claude API 실패 — launch_advisor 중단")
+        logger.error("Step1: Claude API 실패")
         return None
 
     concepts = _parse_json_response(concepts_text, label="concepts")
     if not concepts or not isinstance(concepts, list):
-        logger.error("Step1: 컨셉 JSON 파싱 실패 — launch_advisor 중단")
+        logger.error("Step1: 컨셉 JSON 파싱 실패")
         return None
 
     logger.info(f"Step1 완료: {len(concepts)}개 컨셉 생성")
-
     os.makedirs(output_dir, exist_ok=True)
     concepts_path = os.path.join(output_dir, f"concepts_{date_str}.json")
     with open(concepts_path, "w", encoding="utf-8") as f:
         json.dump(concepts, f, ensure_ascii=False, indent=2)
 
-    # ── top1 선택 ────────────────────────────────────────────────────
     top_concept = _select_top_concept(concepts)
     if not top_concept:
         logger.error("컨셉 top1 선택 실패")
         return concepts_path
 
-    logger.info(f"Top1 컨셉: {top_concept.get('concept_name')} "
-                f"(expected_success_rate={top_concept.get('expected_success_rate')}%)")
+    logger.info(f"Top1: {top_concept.get('concept_name')} (예상성공률 {top_concept.get('expected_success_rate')}%)")
 
-    # ── Step 2 + 3: HTML + SNS 카피 병렬 생성 ────────────────────────
-    logger.info("Step2+3: 펀딩 페이지 HTML + SNS 카피 병렬 생성 중...")
+    # ── 실제 유사 성공 사례 로드 ─────────────────────────────────────
+    similar = _get_similar_projects(processed_dir, top_concept.get("goods_category", ""))
+    logger.info(f"유사 성공 사례: {len(similar)}개")
 
-    html_prompt = _build_html_prompt(top_concept)
-    sns_prompt = _build_sns_prompt(top_concept)
+    # ── Step 2+3+4: 기획서 + 등록 초안 + SNS 병렬 생성 ──────────────
+    logger.info("Step2+3+4: 기획서 + 등록 초안 + SNS 카피 병렬 생성 중...")
 
-    html_content = None
+    planning_md = None
+    draft_md = None
     sns_content = None
 
-    def _gen_html():
-        return call_claude(html_prompt, model=model, max_tokens=max_tokens)
+    def _gen_planning():
+        return call_claude(
+            _build_planning_prompt(top_concept, similar, analysis),
+            model=model, max_tokens=3000,
+        )
+
+    def _gen_draft():
+        return call_claude(
+            _build_draft_prompt(top_concept, similar),
+            model=model, max_tokens=4000,
+        )
 
     def _gen_sns():
-        return call_claude(sns_prompt, model=model, max_tokens=1000)
+        return call_claude(
+            _build_sns_prompt(top_concept),
+            model=model, max_tokens=1000,
+        )
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        f_html = executor.submit(_gen_html)
-        f_sns = executor.submit(_gen_sns)
-
-        for future, label in [(f_html, "html"), (f_sns, "sns")]:
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {
+            executor.submit(_gen_planning): "planning",
+            executor.submit(_gen_draft): "draft",
+            executor.submit(_gen_sns): "sns",
+        }
+        results = {}
+        for future, label in [(f, futures[f]) for f in futures]:
             try:
-                result = future.result()
-                if label == "html":
-                    html_content = result
-                else:
-                    sns_content = result
+                results[label] = future.result()
+                logger.info(f"[{label}] 생성 완료 ({len(results[label] or '')}자)")
             except Exception as e:
-                logger.error(f"Step {'2' if label == 'html' else '3'} [{label}] 실패: {e}")
+                logger.error(f"[{label}] 생성 실패: {e}")
+                results[label] = None
 
-    # ── HTML 저장 ─────────────────────────────────────────────────────
+    planning_md = results.get("planning")
+    draft_md = results.get("draft")
+    sns_content = results.get("sns")
+
+    # ── 기획서 저장 ───────────────────────────────────────────────────
+    if planning_md:
+        planning_path = os.path.join(output_dir, f"planning_{date_str}.md")
+        with open(planning_path, "w", encoding="utf-8") as f:
+            f.write(planning_md)
+        logger.info(f"기획서 저장: {planning_path}")
+    else:
+        logger.error("기획서 생성 실패")
+
+    # ── 등록 초안 저장 ────────────────────────────────────────────────
+    if draft_md:
+        draft_path = os.path.join(output_dir, f"launch_draft_{date_str}.md")
+        with open(draft_path, "w", encoding="utf-8") as f:
+            f.write(draft_md)
+        logger.info(f"등록 초안 저장: {draft_path}")
+    else:
+        logger.error("등록 초안 생성 실패")
+
+    # ── Step 5: GitHub Pages용 HTML 생성 (실제 수치 기반) ────────────
+    logger.info("Step5: GitHub Pages HTML 생성 중...")
     os.makedirs(pages_dir, exist_ok=True)
 
-    if html_content:
-        # 최소 길이 검증
-        if len(html_content) < HTML_MIN_LENGTH:
-            logger.warning(
-                f"HTML 길이 미달 ({len(html_content)} < {HTML_MIN_LENGTH}) — "
-                "단독 재시도 1회"
-            )
-            html_retry = call_claude(html_prompt, model=model, max_tokens=max_tokens)
-            if html_retry and len(html_retry) >= HTML_MIN_LENGTH:
-                html_content = html_retry
-            else:
-                logger.warning("HTML 재시도 후에도 미달 — 원본 사용")
-
+    if planning_md and draft_md:
+        html_content = _build_html_from_reports(top_concept, planning_md, draft_md, analysis)
         html_path = os.path.join(pages_dir, f"funding_page_{date_str}.html")
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
-        logger.info(f"펀딩 페이지 저장: {html_path} ({len(html_content)}자)")
+        logger.info(f"HTML 저장: {html_path} ({len(html_content)}자)")
     else:
-        logger.error("Step2: HTML 생성 실패")
+        logger.warning("기획서 또는 초안 없음 — HTML 생성 스킵")
 
     # ── SNS 카피 저장 ─────────────────────────────────────────────────
     if sns_content:
-        sns_data = _parse_json_response(sns_content, label="sns")
-        if not sns_data:
-            sns_data = {"raw": sns_content}
-
+        sns_data = _parse_json_response(sns_content, label="sns") or {"raw": sns_content}
         sns_path = os.path.join(pages_dir, f"sns_copy_{date_str}.json")
         with open(sns_path, "w", encoding="utf-8") as f:
-            json.dump({
-                "concept_name": top_concept.get("concept_name"),
-                "date": date_str,
-                "copy": sns_data,
-            }, f, ensure_ascii=False, indent=2)
+            json.dump({"concept_name": top_concept.get("concept_name"), "date": date_str, "copy": sns_data},
+                      f, ensure_ascii=False, indent=2)
         logger.info(f"SNS 카피 저장: {sns_path}")
-    else:
-        logger.error("Step3: SNS 카피 생성 실패")
 
     logger.info(f"launch_advisor 완료 → {concepts_path}")
     return concepts_path
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
     from dotenv import load_dotenv
     load_dotenv(override=True)
     path = run_launch_advisor()
