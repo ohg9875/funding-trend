@@ -1,32 +1,32 @@
 {
   "by_goods_category": {
     "기타": {
-      "count": 2764,
-      "success_rate_pct": 90.6,
+      "count": 2767,
+      "success_rate_pct": 90.5,
       "achieved_rate": {
-        "mean": 2292.3,
-        "median": 1555.5,
-        "count": 2764
+        "mean": 2289.0,
+        "median": 1550.0,
+        "count": 2767
       },
       "backers": {
-        "mean": 331.1,
-        "median": 151.5,
-        "count": 2764
+        "mean": 330.7,
+        "median": 150.0,
+        "count": 2767
       },
       "raised_amount": {
-        "mean": 23154099.4,
-        "median": 10104500.0,
-        "count": 2764
+        "mean": 23125775.7,
+        "median": 10097000.0,
+        "count": 2767
       },
-      "avg_trend_score": 61.63,
+      "avg_trend_score": 61.57,
       "saturation_inv": 0.0,
-      "early_success_count": 22
+      "early_success_count": 23
     },
     "데스크소품": {
       "count": 50,
       "success_rate_pct": 80.0,
       "achieved_rate": {
-        "mean": 1526.3,
+        "mean": 1526.5,
         "median": 917.5,
         "count": 50
       },
@@ -36,33 +36,33 @@
         "count": 50
       },
       "raised_amount": {
-        "mean": 11828365.0,
+        "mean": 11829455.0,
         "median": 5791150.0,
         "count": 50
       },
-      "avg_trend_score": 57.1,
+      "avg_trend_score": 57.12,
       "saturation_inv": 0.0,
       "early_success_count": 0
     },
     "문구": {
-      "count": 104,
-      "success_rate_pct": 93.3,
+      "count": 103,
+      "success_rate_pct": 94.2,
       "achieved_rate": {
-        "mean": 2080.8,
-        "median": 1520.5,
-        "count": 104
+        "mean": 2101.0,
+        "median": 1551.0,
+        "count": 103
       },
       "backers": {
-        "mean": 553.0,
-        "median": 281.5,
-        "count": 104
+        "mean": 558.4,
+        "median": 282.0,
+        "count": 103
       },
       "raised_amount": {
-        "mean": 20839015.5,
-        "median": 11137450.0,
-        "count": 104
+        "mean": 21041187.4,
+        "median": 11211700.0,
+        "count": 103
       },
-      "avg_trend_score": 63.18,
+      "avg_trend_score": 63.69,
       "saturation_inv": 0.0,
       "early_success_count": 0
     },
@@ -163,12 +163,12 @@
         "count": 322
       },
       "backers": {
-        "mean": 694.5,
+        "mean": 694.6,
         "median": 218.5,
         "count": 322
       },
       "raised_amount": {
-        "mean": 65775494.3,
+        "mean": 65775630.9,
         "median": 14227250.0,
         "count": 322
       },
@@ -180,17 +180,17 @@
       "count": 51,
       "success_rate_pct": 94.1,
       "achieved_rate": {
-        "mean": 2240.4,
+        "mean": 2246.9,
         "median": 1413.0,
         "count": 51
       },
       "backers": {
-        "mean": 778.1,
+        "mean": 779.0,
         "median": 268.0,
         "count": 51
       },
       "raised_amount": {
-        "mean": 35179976.2,
+        "mean": 35212131.1,
         "median": 10094900.0,
         "count": 51
       },
@@ -222,31 +222,31 @@
     },
     "파우치": {
       "count": 69,
-      "success_rate_pct": 95.7,
+      "success_rate_pct": 97.1,
       "achieved_rate": {
-        "mean": 2712.7,
+        "mean": 2716.0,
         "median": 2217.0,
         "count": 69
       },
       "backers": {
-        "mean": 289.1,
+        "mean": 289.3,
         "median": 201.0,
         "count": 69
       },
       "raised_amount": {
-        "mean": 19196100.7,
+        "mean": 19212823.9,
         "median": 12393200.0,
         "count": 69
       },
-      "avg_trend_score": 65.43,
+      "avg_trend_score": 65.95,
       "saturation_inv": 0.0,
       "early_success_count": 1
     },
     "푸드": {
       "count": 606,
-      "success_rate_pct": 98.3,
+      "success_rate_pct": 98.5,
       "achieved_rate": {
-        "mean": 2337.0,
+        "mean": 2337.8,
         "median": 1644.5,
         "count": 606
       },
@@ -256,13 +256,13 @@
         "count": 606
       },
       "raised_amount": {
-        "mean": 18031084.5,
+        "mean": 18038619.6,
         "median": 9187000.0,
         "count": 606
       },
-      "avg_trend_score": 67.09,
+      "avg_trend_score": 67.16,
       "saturation_inv": 0.0,
-      "early_success_count": 8
+      "early_success_count": 9
     }
   },
   "by_platform": {
@@ -270,28 +270,28 @@
       "count": 900,
       "success_rate_pct": 94.0,
       "achieved_rate": {
-        "mean": 2475.6,
+        "mean": 2474.0,
         "median": 1986.5,
         "count": 900
       },
       "backers": {
-        "mean": 628.9,
+        "mean": 628.6,
         "median": 319.0,
         "count": 900
       }
     },
     "wadiz": {
-      "count": 3238,
+      "count": 3240,
       "success_rate_pct": 91.6,
       "achieved_rate": {
-        "mean": 2226.6,
-        "median": 1183.0,
-        "count": 3238
+        "mean": 2225.4,
+        "median": 1176.0,
+        "count": 3240
       },
       "backers": {
-        "mean": 289.4,
-        "median": 125.0,
-        "count": 3238
+        "mean": 289.3,
+        "median": 124.5,
+        "count": 3240
       }
     }
   },
@@ -421,15 +421,22 @@
     {
       "title": "[3차앵콜]우리집 고양이는 혼자서 발톱관리해요! 클로우케어 먀오 스크래쳐",
       "achieved_rate": 9999.0,
-      "backers": 1317,
+      "backers": 1334,
       "goods_category": "푸드",
       "platform": "wadiz"
     },
     {
       "title": "와디즈 단독ㅣNUPHY NODE100 풀배열 기계식키보드",
-      "achieved_rate": 7999.0,
-      "backers": 963,
+      "achieved_rate": 8039.0,
+      "backers": 968,
       "goods_category": "기타",
+      "platform": "wadiz"
+    },
+    {
+      "title": "카톤 최초｜ALL BLACK&amp;시그니처 케이스 &#x27;블랙 수트 에디션&#x27;의 등장",
+      "achieved_rate": 6913.0,
+      "backers": 413,
+      "goods_category": "파우치",
       "platform": "wadiz"
     },
     {
@@ -440,16 +447,9 @@
       "platform": "wadiz"
     },
     {
-      "title": "카톤 최초｜ALL BLACK&amp;시그니처 케이스 &#x27;블랙 수트 에디션&#x27;의 등장",
-      "achieved_rate": 6705.0,
-      "backers": 405,
-      "goods_category": "파우치",
-      "platform": "wadiz"
-    },
-    {
-      "title": "불을 붙여라. 타고 남은 모든 것에. &lt;아머드 코어 6 오피셜 아트북&gt;",
-      "achieved_rate": 6055.0,
-      "backers": 876,
+      "title": "[유지비 0원] 청정수·오수 완전 분리! 이젠 새 물만 먹게 됩니다.",
+      "achieved_rate": 6231.0,
+      "backers": 663,
       "goods_category": "기타",
       "platform": "wadiz"
     }
@@ -457,7 +457,7 @@
   "saturation_warnings": [
     {
       "goods_category": "기타",
-      "count": 2764
+      "count": 2767
     },
     {
       "goods_category": "푸드",
@@ -469,7 +469,7 @@
     },
     {
       "goods_category": "문구",
-      "count": 104
+      "count": 103
     },
     {
       "goods_category": "테크",
@@ -497,17 +497,17 @@
     }
   ],
   "summary": {
-    "total_projects": 4138,
+    "total_projects": 4140,
     "success_rate_pct": 92.1,
-    "avg_achieved_rate": 2280.8,
-    "avg_backers": 363.2,
-    "early_success_count": 35,
+    "avg_achieved_rate": 2279.4,
+    "avg_backers": 363.1,
+    "early_success_count": 37,
     "has_history": true,
     "goods_category_counts": {
-      "기타": 2764,
+      "기타": 2767,
       "푸드": 606,
       "인형": 322,
-      "문구": 104,
+      "문구": 103,
       "테크": 72,
       "파우치": 69,
       "키링": 51,
@@ -519,94 +519,94 @@
       "에코백": 2
     },
     "platform_counts": {
-      "wadiz": 3238,
+      "wadiz": 3240,
       "tumblbug": 900
     },
-    "analyzed_at": "2026-03-24T12:06:34.422669"
+    "analyzed_at": "2026-03-24T09:14:56.616479"
   },
   "week_over_week": {
-    "아크릴": {
-      "current": 78.5,
-      "previous": 85.53,
-      "delta": -7.03,
-      "direction": "down",
-      "new_this_week": false
-    },
-    "뱃지": {
-      "current": 72.01,
-      "previous": 75.49,
-      "delta": -3.48,
-      "direction": "down",
-      "new_this_week": false
-    },
-    "푸드": {
-      "current": 67.09,
-      "previous": 68.5,
-      "delta": -1.41,
-      "direction": "down",
-      "new_this_week": false
-    },
     "파우치": {
-      "current": 65.43,
-      "previous": 66.52,
-      "delta": -1.09,
-      "direction": "down",
-      "new_this_week": false
-    },
-    "키링": {
-      "current": 64.63,
-      "previous": 65.56,
-      "delta": -0.93,
-      "direction": "down",
-      "new_this_week": false
-    },
-    "테크": {
-      "current": 59.26,
-      "previous": 60.09,
-      "delta": -0.83,
-      "direction": "down",
-      "new_this_week": false
-    },
-    "인형": {
-      "current": 63.47,
-      "previous": 64.16,
-      "delta": -0.69,
-      "direction": "down",
+      "current": 65.95,
+      "previous": 65.43,
+      "delta": 0.52,
+      "direction": "up",
       "new_this_week": false
     },
     "문구": {
-      "current": 63.18,
-      "previous": 63.81,
-      "delta": -0.63,
-      "direction": "down",
+      "current": 63.69,
+      "previous": 63.18,
+      "delta": 0.51,
+      "direction": "up",
       "new_this_week": false
     },
-    "데스크소품": {
-      "current": 57.1,
-      "previous": 56.52,
-      "delta": 0.58,
+    "푸드": {
+      "current": 67.16,
+      "previous": 67.09,
+      "delta": 0.07,
       "direction": "up",
       "new_this_week": false
     },
     "기타": {
-      "current": 61.63,
-      "previous": 62.21,
-      "delta": -0.58,
+      "current": 61.57,
+      "previous": 61.63,
+      "delta": -0.06,
       "direction": "down",
+      "new_this_week": false
+    },
+    "데스크소품": {
+      "current": 57.12,
+      "previous": 57.1,
+      "delta": 0.02,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "아크릴": {
+      "current": 78.5,
+      "previous": 78.5,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "키링": {
+      "current": 64.63,
+      "previous": 64.63,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "테크": {
+      "current": 59.26,
+      "previous": 59.26,
+      "delta": 0.0,
+      "direction": "flat",
       "new_this_week": false
     },
     "의류": {
       "current": 57.88,
-      "previous": 57.46,
-      "delta": 0.42,
-      "direction": "up",
+      "previous": 57.88,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "인형": {
+      "current": 63.47,
+      "previous": 63.47,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "뱃지": {
+      "current": 72.01,
+      "previous": 72.01,
+      "delta": 0.0,
+      "direction": "flat",
       "new_this_week": false
     },
     "인테리어": {
       "current": 62.43,
-      "previous": 62.68,
-      "delta": -0.25,
-      "direction": "down",
+      "previous": 62.43,
+      "delta": 0.0,
+      "direction": "flat",
       "new_this_week": false
     }
   }
