@@ -86,9 +86,9 @@ def _build_concepts_prompt(analysis: dict, concepts_count: int = 3) -> str:
 
     hot_lines = "\n".join(
         f"  - {cat}: 트렌드점수 {d.get('avg_trend_score', 0):.1f}, "
-        f"성공률 {d.get('success_rate', 0):.0f}%, "
-        f"평균달성률 {d.get('avg_achieved_rate', 0):.0f}%, "
-        f"평균후원자 {d.get('avg_backers', 0):.0f}명"
+        f"성공률 {d.get('success_rate_pct', 0):.0f}%, "
+        f"평균달성률 {d.get('achieved_rate', {}).get('mean', 0):.0f}%, "
+        f"평균후원자 {d.get('backers', {}).get('mean', 0):.0f}명"
         for cat, d in hot_cats
     )
 
@@ -622,8 +622,8 @@ def run_launch_advisor(
     processed_dir: str = "data/processed",
     output_dir: str = "data/reports",
     pages_dir: str = "data/pages",
-    model: str = "claude-sonnet-4-20250514",
-    max_tokens: int = 4000,
+    model: str = "claude-sonnet-4-6",
+    max_tokens: int = 8000,
     concepts_count: int = 3,
 ) -> Optional[str]:
     """

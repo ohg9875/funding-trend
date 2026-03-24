@@ -38,7 +38,7 @@ _RETRY_DELAYS = [30, 60]  # 1차 실패 후 30초, 2차 실패 후 60초
 
 def call_claude(
     prompt: str,
-    model: str = "claude-sonnet-4-20250514",
+    model: str = "claude-sonnet-4-6",
     max_tokens: int = 2000,
     max_retries: int = 3,
 ) -> Optional[str]:

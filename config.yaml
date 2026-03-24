@@ -33,12 +33,12 @@ analyzer:
   top_concept_metric: success_rate # launch_advisor top 1 선택 기준
 
 reporter:
-  model: claude-sonnet-4-20250514
+  model: claude-sonnet-4-6
   max_tokens: 2000
 
 launch_advisor:
-  model: claude-sonnet-4-20250514
-  max_tokens: 16000 # HTML 생성 truncation 방지 (4000은 부족)
+  model: claude-sonnet-4-6
+  max_tokens: 8000 # claude-sonnet-4-6 안전 상한
   concepts_count: 3 # 생성할 상품 컨셉 수
   html_min_length: 3000 # 이 미만이면 truncation 경고
 
