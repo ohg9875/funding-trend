@@ -1,0 +1,18 @@
+# 크롤링
+playwright>=1.40.0
+requests>=2.31.0
+
+# 데이터 처리
+pandas>=2.2.0          # Python 3.13 지원: 2.2.x부터
+rapidfuzz>=3.0.0
+
+# LLM
+anthropic>=0.25.0
+
+# 스케줄러
+apscheduler>=3.10.0
+pytz>=2023.3
+
+# 환경 관리
+python-dotenv>=1.0.0
+pyyaml>=6.0

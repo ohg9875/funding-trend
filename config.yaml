@@ -1,0 +1,53 @@
+# 펀딩 트렌드 인사이트 & 상품 기획 자동화 MVP
+# 텀블벅·와디즈 전체 카테고리 트렌드 분석 + launch_advisor
+
+collect:
+  delay_min: 2
+  delay_max: 4
+  max_pages: 15
+  parallel: true # tumblbug + wadiz 동시 수집
+
+tumblbug:
+  enabled: true
+  categories:
+    - character-and-goods # 캐릭터·굿즈
+    - design-stationery # 디자인·문구
+    - food # 푸드
+    - tech # 테크·가전
+    # - fashion             # 패션 (슬러그 확인 후 활성화)
+
+wadiz:
+  # 카테고리 코드 — 내부 API POST 파라미터
+  # A0120: 캐릭터·굿즈, A0100: 라이프스타일, A0150: 패션·뷰티
+  # A0130: 테크·가전, A0200: 푸드
+  categories:
+    - A0120
+    - A0100
+    - A0150
+    - A0130
+    - A0200
+
+analyzer:
+  min_sample: 3 # 카테고리 샘플 수 미만이면 분석 제외
+  saturation_threshold: 30 # 주간 신규 프로젝트 수 초과 시 레드오션 경고
+  top_concept_metric: success_rate # launch_advisor top 1 선택 기준
+
+reporter:
+  model: claude-sonnet-4-20250514
+  max_tokens: 2000
+
+launch_advisor:
+  model: claude-sonnet-4-20250514
+  max_tokens: 16000 # HTML 생성 truncation 방지 (4000은 부족)
+  concepts_count: 3 # 생성할 상품 컨셉 수
+  html_min_length: 3000 # 이 미만이면 truncation 경고
+
+output:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  reports_dir: data/reports
+  pages_dir: data/pages
+
+scheduler:
+  enabled: false # true로 변경 시 매주 월요일 09:00 자동 실행
+  cron: "0 9 * * MON"
