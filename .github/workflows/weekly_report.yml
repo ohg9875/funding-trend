@@ -3,7 +3,7 @@ name: 주간 펀딩 트렌드 리포트
 on:
   schedule:
     - cron: "0 0 * * MON"   # 매주 월요일 00:00 UTC = 09:00 KST
-  workflow_dispatch:          # 수동 실행 버튼
+  workflow_dispatch: {}       # 수동 실행 버튼
 
 jobs:
   generate-and-deploy:
