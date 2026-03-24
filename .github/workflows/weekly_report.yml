@@ -51,4 +51,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/ data/processed/ data/reports/
           git diff --staged --quiet || git commit -m "chore: 주간 리포트 자동 업데이트 $(date +'%Y-%m-%d')"
+          git pull --rebase origin master
           git push
