@@ -116,16 +116,88 @@ def _build_html_prompt(concept: dict) -> str:
 - 목표금액: {concept.get('funding_goal', '')}
 - 차별화 포인트: {concept.get('differentiation', '')}
 
-## HTML 요구사항
-- 완전한 standalone HTML 문서 (<!DOCTYPE html>부터 </html>까지)
-- 라이트 모드 전용 (배경: #ffffff)
-- 폰트: Pretendard Variable (CDN: https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css)
-- Mobile-first 반응형 (breakpoints: 320px / 768px / 1200px)
-- CTA 버튼 최소 44×44px 터치 타깃
-- 금지 패턴: 보라 그라디언트 히어로, 맥락없는 3열 아이콘 카드
-- 섹션 구성: 히어로 → 상품 소개 → 리워드 구성 → 제작자 소개 → FAQ → CTA
+## 색상 시스템 (반드시 이 CSS 변수 사용 — 임의 색상 금지)
+```css
+--color-primary: #FF5A1F;
+--color-primary-hover: #E04A10;
+--color-surface: #F7F8FA;
+--color-border: #E2E8F0;
+--color-text: #1A202C;
+--color-text-sub: #4A5568;
+--color-text-muted: #718096;
+--color-success: #38A169;
+```
 
-완전한 HTML만 출력하세요. 설명이나 마크다운 코드펜스 없이 HTML 코드만 반환합니다."""
+## 타입 스케일 (Major Third 1.25 기반 — 임의 font-size 금지)
+- 히어로 메인 타이틀: 2.441rem / 700
+- 히어로 서브: 1.953rem / 600
+- 섹션 타이틀: 1.563rem / 700
+- 소제목: 1.25rem / 600
+- 본문: 1rem / 400, line-height: 1.7
+- 보조: 0.875rem
+- 메타/뱃지: 0.75rem
+
+## 섹션 구성 (이 순서 필수)
+1. **히어로** — 상품명 + 1줄 훅 카피 + 상품 이미지 + "지금 후원하기" CTA
+2. **펀딩 현황 위젯** — 달성률(%) + 진행 바 + 후원자 수 + 남은 기간(D-day) + 목표 금액
+3. **상품 소개** — 차별화 포인트 3개 (이미지+텍스트, 1열 세로 배치)
+4. **리워드 구성** — 카드 2-3개 (기본/스탠다드/프리미엄)
+5. **제작자 소개** — 브랜드명 + 소개 + 이전 프로젝트 이력
+6. **FAQ** — 아코디언 4-5개 (반드시 "펀딩 미달성 환불", "배송 일정" 포함)
+7. **하단 고정 CTA 바** — position: sticky; bottom: 0 (모바일 항상 노출)
+
+## 펀딩 현황 위젯 (필수 요소)
+```html
+<!-- 예시 구조 — 실제 수치는 컨셉에 맞게 조정 -->
+<div class="funding-widget">
+  <div class="funding-progress-bar" style="width: 127%"></div>
+  <div class="funding-stats">
+    <div>127% 달성</div>
+    <div>1,284명 후원</div>
+    <div>D-7 남음</div>
+    <div>목표 3,000,000원</div>
+  </div>
+</div>
+```
+
+## 이미지 플레이스홀더 (점선 dashed 테두리 금지)
+- 배경: var(--color-surface), 테두리: 1px solid var(--color-border)
+- 상품 관련 이모지 크게 + 상품명 텍스트 조합
+
+## 신뢰 요소 (Trust Signals — 빠지면 안 됨)
+- CTA 근처에 "펀딩 미달성 시 전액 환불" 문구
+- "결제는 펀딩 성공 후 진행됩니다" 안내
+- FAQ에 교환/환불 정책 항목
+
+## 인터랙션 상태
+- 리워드 카드 hover: border-color 강조 + translateY(-2px)
+- 버튼 active: transform: scale(0.98)
+- FAQ 아코디언: CSS transition 0.25s ease (JS 불필요 — details/summary 태그 활용)
+
+## 반응형 규칙
+- 320px: 단일 컬럼, 히어로 타이틀 1.563rem, padding 16px
+- 768px+: 히어로 2컬럼 (좌:텍스트, 우:이미지), padding 24px
+- 1200px+: max-width 1200px 중앙 고정
+- 펀딩 현황: 320px에서 2×2 그리드, 768px+에서 4열 1행
+
+## 접근성
+- CTA 버튼 최소 44×44px
+- outline: 2px solid var(--color-primary); outline-offset: 2px (outline:none 금지)
+- <html lang="ko">
+- 이미지에 alt 속성 필수
+
+## 카피 톤
+- 존댓말 (~입니다, ~해요체)
+- CTA: "지금 후원하기" (구매하기 X)
+- word-break: keep-all (한국어 단어 분리 방지)
+
+## 금지 패턴 (AI Slop)
+- 보라/인디고 그라디언트 히어로 배경 금지
+- 이모지+파란 그라디언트 원형 creator avatar 금지
+- 맥락 없는 3열 이모지 아이콘 카드 금지
+- 모든 박스에 동일한 box-shadow 반복 금지
+
+완전한 HTML만 출력하세요. 마크다운 코드펜스 없이 <!DOCTYPE html>부터 </html>까지만 반환합니다."""
 
 
 def _build_sns_prompt(concept: dict) -> str:

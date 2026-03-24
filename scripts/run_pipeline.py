@@ -35,9 +35,15 @@ if __name__ == "__main__":
     if result.get("warnings"):
         print(f"경고: {result['warnings']}")
 
-    # 생성된 최신 HTML을 브라우저로 자동 오픈
-    html_files = sorted(_glob.glob("data/pages/funding_page_*.html"), reverse=True)
-    if html_files:
-        html_path = os.path.abspath(html_files[0])
-        print(f"\n🌐 펀딩 페이지 미리보기: {html_path}")
-        webbrowser.open(f"file:///{html_path}")
+    # GitHub Pages 배포 (CI 환경 또는 --deploy 플래그)
+    if os.getenv("CI") or "--deploy" in sys.argv:
+        from scripts.deploy_pages import deploy_to_pages
+        deploy_to_pages()
+
+    # 생성된 최신 HTML을 브라우저로 자동 오픈 (로컬 전용)
+    if not os.getenv("CI"):
+        html_files = sorted(_glob.glob("data/pages/funding_page_*.html"), reverse=True)
+        if html_files:
+            html_path = os.path.abspath(html_files[0])
+            print(f"\n펀딩 페이지 미리보기: {html_path}")
+            webbrowser.open(f"file:///{html_path}")
