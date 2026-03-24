@@ -165,10 +165,10 @@ def _build_planning_prompt(concept: dict, similar_projects: list, analysis: dict
 - 카테고리: {cat}
 - 트렌드 점수: {cat_data.get('avg_trend_score', 0):.1f}점
 - 전주 대비: {wow.get('delta', 0):+.1f}점 ({wow.get('direction', 'flat')})
-- 카테고리 평균 달성률: {cat_data.get('avg_achieved_rate', 0):.0f}%
-- 카테고리 평균 후원자: {cat_data.get('avg_backers', 0):.0f}명
-- 펀딩 성공률(100% 달성): {cat_data.get('success_rate', 0):.0f}%
-- 이번 주 신규 프로젝트 수: {cat_data.get('project_count', 0)}개
+- 카테고리 평균 달성률: {cat_data.get('achieved_rate', {}).get('mean', 0):.0f}%
+- 카테고리 평균 후원자: {cat_data.get('backers', {}).get('mean', 0):.0f}명
+- 펀딩 성공률(100% 달성): {cat_data.get('success_rate_pct', 0):.0f}%
+- 이번 주 신규 프로젝트 수: {cat_data.get('count', 0)}개
 
 ## 동일 카테고리 실제 성공 사례 (이번 주 수집)
 {projects_text}
@@ -284,12 +284,69 @@ def _build_sns_prompt(concept: dict) -> str:
 }}"""
 
 
-def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, analysis: dict) -> str:
+def _build_comparison_rows(all_concepts: list, analysis: dict) -> str:
+    """3개 컨셉 비교 표 HTML 행 생성"""
+    rows = []
+    by_cat = analysis.get("by_goods_category", {})
+    for i, c in enumerate(all_concepts):
+        cat = c.get("goods_category", "")
+        cat_data = by_cat.get(cat, {})
+        score = cat_data.get("avg_trend_score", 0)
+        count = cat_data.get("count", 0)
+        saturation = "낮음" if count <= 5 else ("중간" if count <= 20 else "높음")
+        saturation_color = "#38A169" if count <= 5 else ("#D97706" if count <= 20 else "#E53E3E")
+        badge = ' <span style="background:#FF5A1F;color:#fff;font-size:.65rem;padding:2px 6px;border-radius:10px;vertical-align:middle">1위</span>' if i == 0 else ""
+        rows.append(
+            f'<tr{"style=\"background:#FFF8F6\"" if i == 0 else ""}>'
+            f'<td><strong>{c.get("concept_name", "")}</strong>{badge}</td>'
+            f'<td style="text-align:center">{c.get("goods_category", "")}</td>'
+            f'<td style="text-align:center;color:#FF5A1F;font-weight:700">{score:.0f}점</td>'
+            f'<td style="text-align:center">{c.get("expected_success_rate", 0)}%</td>'
+            f'<td style="text-align:center;color:{saturation_color}">{saturation} ({count}건)</td>'
+            f'<td style="text-align:center">{c.get("price_range", "-")}</td>'
+            f'</tr>'
+        )
+    return "\n".join(rows)
+
+
+def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, analysis: dict, all_concepts: list = None) -> str:
     """기획서 + 등록 초안을 GitHub Pages용 HTML로 변환 (실제 수치 기반)"""
     cat = concept.get("goods_category", "")
     cat_data = analysis.get("by_goods_category", {}).get(cat, {})
     wow = analysis.get("week_over_week", {}).get(cat, {})
     direction_symbol = {"up": "↑", "down": "↓", "flat": "→"}.get(wow.get("direction", "flat"), "→")
+    # 비교 표 블록 (f-string 밖에서 계산 — 중첩 f-string 문제 방지)
+    if all_concepts and len(all_concepts) > 1:
+        comparison_rows = _build_comparison_rows(all_concepts, analysis)
+        comparison_block = (
+            '<div class="compare-section">'
+            '<h3>이번 주 컨셉 비교</h3>'
+            '<table class="compare-table"><thead><tr>'
+            '<th>컨셉명</th><th>카테고리</th><th>트렌드 점수</th>'
+            '<th>예상 성공률</th><th>경쟁 강도</th><th>가격대</th>'
+            '</tr></thead><tbody>'
+            + comparison_rows +
+            '</tbody></table>'
+            '<button class="slack-btn" onclick="copySlackMsg()">'
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">'
+            '<path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165'
+            'a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52'
+            ' 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1'
+            '-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1'
+            ' 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1'
+            ' 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528'
+            ' 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528'
+            ' 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528'
+            ' 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165'
+            ' 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522'
+            'A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688'
+            'a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24'
+            ' 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>'
+            ' Slack으로 공유'
+            '</button></div>'
+        )
+    else:
+        comparison_block = ""
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
@@ -329,6 +386,14 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
     .tab.active {{ color: var(--primary); border-bottom-color: var(--primary); }}
     .tab-content {{ display: none; padding: 32px 0 60px; }}
     .tab-content.active {{ display: block; }}
+    .compare-section {{ padding: 32px 0 8px; }}
+    .compare-section h3 {{ font-size: 1rem; font-weight: 700; margin-bottom: 12px; }}
+    .compare-table {{ width: 100%; border-collapse: collapse; font-size: .875rem; }}
+    .compare-table th {{ background: var(--surface); padding: 10px 12px; text-align: left; font-weight: 600; border: 1px solid var(--border); color: var(--text-muted); font-size: .75rem; }}
+    .compare-table td {{ padding: 10px 12px; border: 1px solid var(--border); }}
+    .slack-btn {{ display: inline-flex; align-items: center; gap: 8px; background: #4A154B; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: .875rem; font-weight: 600; cursor: pointer; margin-top: 16px; transition: opacity .15s; }}
+    .slack-btn:hover {{ opacity: .85; }}
+    .toast {{ position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1A202C; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: .875rem; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 200; }}
     .md-body h1 {{ font-size: 1.563rem; font-weight: 700; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }}
     .md-body h2 {{ font-size: 1.25rem; font-weight: 700; margin: 28px 0 10px; color: var(--text); }}
     .md-body p {{ margin-bottom: 14px; color: var(--text-sub); }}
@@ -363,15 +428,15 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
         <div class="wow">{direction_symbol} {wow.get('delta', 0):+.1f}</div>
       </div>
       <div class="stat-card">
-        <div class="val">{cat_data.get('success_rate', 0):.0f}%</div>
+        <div class="val">{cat_data.get('success_rate_pct', 0):.0f}%</div>
         <div class="lbl">카테고리 성공률</div>
       </div>
       <div class="stat-card">
-        <div class="val">{cat_data.get('avg_achieved_rate', 0):.0f}%</div>
+        <div class="val">{cat_data.get('achieved_rate', {}).get('mean', 0):.0f}%</div>
         <div class="lbl">평균 달성률</div>
       </div>
       <div class="stat-card">
-        <div class="val">{cat_data.get('avg_backers', 0):.0f}명</div>
+        <div class="val">{cat_data.get('backers', {}).get('mean', 0):.0f}명</div>
         <div class="lbl">평균 후원자</div>
       </div>
     </div>
@@ -379,6 +444,7 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
 </div>
 
 <div class="container">
+  {comparison_block}
   <div class="tabs">
     <div class="tab active" onclick="switchTab('planning', this)">기획서</div>
     <div class="tab" onclick="switchTab('draft', this)">등록 초안</div>
@@ -391,6 +457,8 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
     <div class="md-body" id="draft-content"></div>
   </div>
 </div>
+
+<div class="toast" id="toast">복사됐습니다!</div>
 
 <footer>
   <div class="container">펀딩 트렌드 인사이트 MVP · 매주 월요일 자동 업데이트</div>
@@ -409,6 +477,24 @@ function switchTab(id, el) {{
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-' + id).classList.add('active');
+}}
+
+function copySlackMsg() {{
+  const msg = [
+    '📊 *펀딩 트렌드 인사이트 — {datetime.now().strftime("%Y년 %m월 %d일")}*',
+    '',
+    '🥇 *이번 주 TOP 추천 컨셉*',
+    '  {concept.get("concept_name", "")} ({cat} · 트렌드 {cat_data.get("avg_trend_score", 0):.0f}점)',
+    '  예상 성공률 {concept.get("expected_success_rate", 0)}% · 목표금액 {concept.get("funding_goal", "")}',
+    '  가격대: {concept.get("price_range", "")}',
+    '',
+    '🔗 기획서·등록 초안 보기: https://ohg9875.github.io/funding-trend/',
+  ].join('\\n');
+  navigator.clipboard.writeText(msg).then(() => {{
+    const t = document.getElementById('toast');
+    t.style.opacity = '1';
+    setTimeout(() => t.style.opacity = '0', 2000);
+  }});
 }}
 </script>
 </body>
@@ -566,7 +652,7 @@ def run_launch_advisor(
     os.makedirs(pages_dir, exist_ok=True)
 
     if planning_md and draft_md:
-        html_content = _build_html_from_reports(top_concept, planning_md, draft_md, analysis)
+        html_content = _build_html_from_reports(top_concept, planning_md, draft_md, analysis, all_concepts=concepts)
         html_path = os.path.join(pages_dir, f"funding_page_{date_str}.html")
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)

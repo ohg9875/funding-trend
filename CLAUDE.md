@@ -37,9 +37,12 @@ PYTHONIOENCODING=utf-8 python tests/test_launch_advisor.py
 ```
 tumblbug_collector ──┐
                       ├─▶ preprocessor ─▶ analyzer ─┬─▶ reporter
-wadiz_collector    ──┘                               └─▶ launch_advisor
-                                                           ├─ Step1: concepts JSON
-                                                           ├─ Step2+3(병렬): HTML + SNS 카피
+wadiz_collector    ──┘           │                   └─▶ launch_advisor
+                          (unified_*.json)                  ├─ Step1: concepts JSON
+                                 │                          ├─ Step2+3+4 (3-worker 병렬):
+                                 └──────────────────────────┤   기획서 MD + 등록 초안 MD + SNS JSON
+                                                            └─ Step5: GitHub Pages HTML
+                                                                 (비교 표 + Slack 공유 버튼)
 ```
 
 ## 코딩 규칙
