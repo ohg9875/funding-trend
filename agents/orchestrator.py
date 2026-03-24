@@ -209,6 +209,22 @@ def run_pipeline(config_path: str = "config.yaml") -> dict:
         f"파이프라인 완료 [{log['status']}] "
         f"리포트: {log.get('report_path')} / 어드바이저: {log.get('advisor_path')}"
     )
+
+    # ── 슬랙 알림 (SLACK_WEBHOOK_URL 설정 시 자동 발송) ──────────────
+    notify_cfg = cfg.get("notify", {})
+    if notify_cfg.get("enabled", True):
+        try:
+            from utils.notifier import send_slack_notification
+            webhook_env = notify_cfg.get("slack_webhook_url_env", "SLACK_WEBHOOK_URL")
+            send_slack_notification(
+                log,
+                processed_dir=processed_dir,
+                reports_dir=reports_dir,
+                webhook_url=os.getenv(webhook_env, ""),
+            )
+        except Exception as e:
+            logger.warning(f"슬랙 알림 오류: {e}")
+
     return log
 
 

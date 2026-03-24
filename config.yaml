@@ -51,3 +51,7 @@ output:
 scheduler:
   enabled: false # true로 변경 시 매주 월요일 09:00 자동 실행
   cron: "0 9 * * MON"
+
+notify:
+  enabled: true
+  slack_webhook_url_env: SLACK_WEBHOOK_URL # .env에 설정하면 자동 발송, 없으면 건너뜀
