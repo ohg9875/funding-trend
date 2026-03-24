@@ -1,15 +1,575 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>펀딩 트렌드 인사이트</title>
-  <style>
-    body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f7f8fa; color: #4a5568; }
-    p { font-size: 1.2rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반려동물 추모 아크릴 액자 - 크라우드펀딩</title>
+    <style>
+        :root {
+            --color-primary: #FF5A1F;
+            --color-primary-hover: #E04A10;
+            --color-surface: #F7F8FA;
+            --color-border: #E2E8F0;
+            --color-text: #1A202C;
+            --color-text-sub: #4A5568;
+            --color-text-muted: #718096;
+            --color-success: #38A169;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--color-text);
+            line-height: 1.7;
+            word-break: keep-all;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero-title {
+            font-size: 1.563rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-sub);
+            margin-bottom: 24px;
+        }
+
+        .hero-image {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 24px;
+        }
+
+        .hero-image .emoji {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .cta-primary {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 44px;
+            min-width: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .cta-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .cta-primary:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        .cta-primary:active {
+            transform: scale(0.98);
+        }
+
+        .funding-widget {
+            background: white;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 48px;
+        }
+
+        .progress-container {
+            background: var(--color-surface);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            background: var(--color-success);
+            height: 100%;
+            width: 127%;
+            max-width: 100%;
+            border-radius: 6px;
+        }
+
+        .funding-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+        }
+
+        .section-title {
+            font-size: 1.563rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .feature {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .feature-image {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        .feature-image .emoji {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 12px;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            color: var(--color-text-sub);
+        }
+
+        .reward-grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .reward-card {
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .reward-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+
+        .reward-badge {
+            background: var(--color-primary);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 12px;
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .reward-price {
+            font-size: 1.953rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 8px;
+        }
+
+        .reward-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 16px;
+        }
+
+        .reward-features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .reward-features li {
+            font-size: 1rem;
+            color: var(--color-text-sub);
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .reward-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+            font-weight: 600;
+        }
+
+        .creator-section {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 48px;
+        }
+
+        .creator-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 16px;
+        }
+
+        .creator-desc {
+            font-size: 1rem;
+            color: var(--color-text-sub);
+            margin-bottom: 16px;
+        }
+
+        .creator-history {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+        }
+
+        .faq-section {
+            margin-bottom: 80px;
+        }
+
+        .faq-item {
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .faq-item details {
+            background: white;
+        }
+
+        .faq-item summary {
+            padding: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text);
+            border-bottom: 1px solid var(--color-border);
+            list-style: none;
+            transition: all 0.25s ease;
+        }
+
+        .faq-item summary:hover {
+            background: var(--color-surface);
+        }
+
+        .faq-item summary:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        .faq-content {
+            padding: 20px;
+            color: var(--color-text-sub);
+            font-size: 1rem;
+        }
+
+        .trust-signal {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .fixed-cta {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--color-border);
+            padding: 16px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 24px;
+            }
+
+            .hero {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 48px;
+                align-items: center;
+                text-align: left;
+            }
+
+            .hero-title {
+                font-size: 2.441rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.953rem;
+            }
+
+            .hero-image {
+                height: 400px;
+            }
+
+            .funding-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .reward-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-  <p>첫 번째 리포트가 생성되면 이 페이지가 자동으로 업데이트됩니다.</p>
+    <div class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">반려동물 추모 아크릴 액자</h1>
+                <p class="hero-subtitle">소중한 추억을 빛으로 간직하는 특별한 방법</p>
+                <button class="cta-primary">지금 후원하기</button>
+                <div class="trust-signal">
+                    펀딩 미달성 시 전액 환불 | 결제는 펀딩 성공 후 진행됩니다
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="emoji">🐕💕</div>
+                <div>반려동물 추모 아크릴 액자</div>
+            </div>
+        </section>
+
+        <section class="funding-widget">
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="funding-stats">
+                <div class="stat-item">
+                    <div class="stat-value">127%</div>
+                    <div class="stat-label">달성률</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1,284명</div>
+                    <div class="stat-label">후원자 수</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">D-7</div>
+                    <div class="stat-label">남은 기간</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">800만원</div>
+                    <div class="stat-label">목표 금액</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="product-intro">
+            <h2 class="section-title">왜 특별한가요?</h2>
+            
+            <div class="feature">
+                <div class="feature-image">
+                    <div class="emoji">✨</div>
+                    <div>LED 무드등 기능</div>
+                </div>
+                <h3 class="feature-title">따뜻한 빛으로 추억을 밝혀주는 LED 조명</h3>
+                <p class="feature-desc">내장된 LED 조명이 아크릴을 통해 은은하게 퍼져 나와 감성적인 분위기를 연출합니다. 침실이나 거실 어디든 완벽한 무드등 역할을 해드려요.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-image">
+                    <div class="emoji">🎨</div>
+                    <div>개인 맞춤 제작</div>
+                </div>
+                <h3 class="feature-title">나만의 반려동물 사진과 메시지로 완성</h3>
+                <p class="feature-desc">고객님이 보내주신 반려동물 사진을 고화질로 인쇄하고, 레이저 각인으로 이름과 특별한 메시지까지 새겨드립니다. 세상에 하나뿐인 추모 액자가 완성됩니다.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-image">
+                    <div class="emoji">🏠</div>
+                    <div>컴팩트한 디자인</div>
+                </div>
+                <h3 class="feature-title">어디든 놓기 좋은 소형 사이즈</h3>
+                <p class="feature-desc">데스크탑, 침실 사이드 테이블, 거실 선반 등 어디든 부담없이 놓을 수 있는 컴팩트한 크기입니다. 투명 아크릴 소재로 공간에 자연스럽게 녹아들어요.</p>
+            </div>
+        </section>
+
+        <section class="rewards">
+            <h2 class="section-title">리워드 선택</h2>
+            <div class="reward-grid">
+                <div class="reward-card">
+                    <div class="reward-price">35,000원</div>
+                    <h3 class="reward-title">베이직 에디션</h3>
+                    <ul class="reward-features">
+                        <li>아크릴 액자 1개</li>
+                        <li>LED 조명 기능</li>
+                        <li>사진 인쇄 포함</li>
+                        <li>이름 레이저 각인</li>
+                    </ul>
+                    <button class="cta-primary">후원하기</button>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-badge">인기</div>
+                    <div class="reward-price">45,000원</div>
+                    <h3 class="reward-title">스탠다드 에디션</h3>
+                    <ul class="reward-features">
+                        <li>아크릴 액자 1개</li>
+                        <li>LED 조명 기능</li>
+                        <li>고화질 사진 인쇄</li>
+                        <li>이름 + 메시지 각인</li>
+                        <li>전용 포장박스</li>
+                    </ul>
+                    <button class="cta-primary">후원하기</button>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-price">55,000원</div>
+                    <h3 class="reward-title">프리미엄 에디션</h3>
+                    <ul class="reward-features">
+                        <li>아크릴 액자 1개</li>
+                        <li>LED 조명 기능 (색상 변경)</li>
+                        <li>프리미엄 사진 인쇄</li>
+                        <li>이름 + 긴 메시지 각인</li>
+                        <li>고급 선물용 포장</li>
+                        <li>USB 충전 케이블</li>
+                    </ul>
+                    <button class="cta-primary">후원하기</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="creator-section">
+            <h2 class="section-title">제작자 소개</h2>
+            <h3 class="creator-name">메모리 크래프트 (Memory Craft)</h3>
+            <p class="creator-desc">
+                반려동물과의 소중한 추억을 간직할 수 있는 특별한 제품을 만드는 브랜드입니다. 
+                아크릴 가공과 LED 조명 기술을 결합하여 감성적이면서도 실용적인 제품을 제작하고 있어요.
+            </p>
+            <p class="creator-history">
+                이전 프로젝트: 맞춤형 아크릴 포토프레임 (목표 달성률 156%), 
+                LED 북엔드 무드등 (목표 달성률 203%)
+            </p>
+        </section>
+
+        <section class="faq-section">
+            <h2 class="section-title">자주 묻는 질문</h2>
+            
+            <div class="faq-item">
+                <details>
+                    <summary>펀딩이 미달성되면 환불받을 수 있나요?</summary>
+                    <div class="faq-content">
+                        네, 목표 금액에 도달하지 못할 경우 후원해주신 모든 금액을 전액 환불해드립니다. 
+                        환불 처리는 펀딩 종료 후 7일 이내에 진행되며, 결제하신 방법으로 환불됩니다.
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary>배송은 언제 시작되나요?</summary>
+                    <div class="faq-content">
+                        펀딩 성공 후 제작 기간을 포함하여 약 4-6주 후 순차적으로 배송을 시작합니다. 
+                        개인 맞춤 제작 특성상 제작 시간이 필요한 점 양해 부탁드려요. 
+                        배송 시작 전 개별 연락드립니다.
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary>사진은 어떻게 전달하나요?</summary>
+                    <div class="faq-content">
+                        펀딩 성공 후 후원자분들께 개별 연락드려 사진과 각인 메시지를 받을 예정입니다. 
+                        고화질 사진(최소 1000x1000px 이상)을 권장하며, 
+                        JPG, PNG 파일로 전달해주시면 됩니다.
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary>LED 조명 사용 시간은 얼마나 되나요?</summary>
+                    <div class="faq-content">
+                        내장 배터리로 연속 사용 시 약 8-10시간 정도 사용 가능합니다. 
+                        USB 케이블로 충전할 수 있으며, 충전 시간은 약 2-3시간입니다. 
+                        프리미엄 에디션은 색상 변경 기능도 포함되어 있어요.
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary>교환이나 환불이 가능한가요?</summary>
+                    <div class="faq-content">
+                        개인 맞춤 제작 상품 특성상 단순 변심에 의한 교환/환불은 어려우나, 
+                        제작 오류나 파손된 제품 수령 시에는 교환해드립니다. 
+                        수령 후 7일 이내 연락주시면 신속히 처리해드려요.
+                    </div>
+                </details>
+            </div>
+        </section>
+    </div>
+
+    <div class="fixed-cta">
+        <button class="cta-primary">지금 후원하기</button>
+        <div class="trust-signal">
+            펀딩 미달성 시 전액 환불
+        </div>
+    </div>
 </body>
 </html>
