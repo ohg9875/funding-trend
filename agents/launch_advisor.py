@@ -284,6 +284,85 @@ def _build_sns_prompt(concept: dict) -> str:
 }}"""
 
 
+def _build_image_guide_prompt(concept: dict) -> str:
+    return f"""당신은 크라우드펀딩 제품 사진 전문 디렉터입니다.
+아래 상품 정보를 바탕으로 텀블벅/와디즈 등록에 필요한 이미지 제작 가이드를 작성해주세요.
+
+## 상품 정보
+- 상품명: {concept.get('concept_name', '')}
+- 카테고리: {concept.get('goods_category', '')}
+- 타겟: {concept.get('target_audience', '')}
+- 설명: {concept.get('product_description', '')}
+- 가격대: {concept.get('price_range', '')}
+- 차별화: {concept.get('differentiation', '')}
+
+---
+다음 구조로 마크다운 이미지 가이드를 작성하세요:
+
+# 이미지 제작 가이드 — {concept.get('concept_name', '')}
+
+## 필요 컷 리스트 (우선순위 순)
+
+### 1. 메인 대표 이미지 (썸네일용 — 가장 중요)
+**촬영 방향:** (어떤 각도, 배경, 분위기)
+**촬영 팁:** (조명, 소품, 연출 포인트 2~3줄)
+
+**Midjourney 프롬프트:**
+```
+(영어로, 상품 특징 반영, --ar 1:1 또는 --ar 4:3)
+```
+
+**DALL-E 3 프롬프트:**
+```
+(영어로, 상품 특징 반영, 실사풍)
+```
+
+### 2. 실사용 컷 (제품 사용 장면)
+**촬영 방향:**
+**촬영 팁:**
+
+**Midjourney 프롬프트:**
+```
+```
+
+**DALL-E 3 프롬프트:**
+```
+```
+
+### 3. 상세 디테일 컷 (소재/마감 강조)
+**촬영 방향:**
+**촬영 팁:**
+
+**Midjourney 프롬프트:**
+```
+```
+
+### 4. 감성 배치 컷 (인테리어/라이프스타일)
+**촬영 방향:**
+**촬영 팁:**
+
+**Midjourney 프롬프트:**
+```
+```
+
+### 5. 패키지/언박싱 컷 (선물용 어필)
+**촬영 방향:**
+**촬영 팁:**
+
+**Midjourney 프롬프트:**
+```
+```
+
+## 공통 촬영 환경 체크리스트
+- [ ] 배경:
+- [ ] 조명:
+- [ ] 필수 소품:
+- [ ] 피해야 할 것:
+
+## 색상 팔레트 제안
+(어울리는 배경색 3가지 — 헥스코드 포함)"""
+
+
 def _build_comparison_rows(all_concepts: list, analysis: dict) -> str:
     """3개 컨셉 비교 표 HTML 행 생성"""
     rows = []
@@ -309,7 +388,7 @@ def _build_comparison_rows(all_concepts: list, analysis: dict) -> str:
     return "\n".join(rows)
 
 
-def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, analysis: dict, all_concepts: list = None) -> str:
+def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, analysis: dict, all_concepts: list = None, image_guide_md: str = None) -> str:
     """기획서 + 등록 초안을 GitHub Pages용 HTML로 변환 (실제 수치 기반)"""
     cat = concept.get("goods_category", "")
     cat_data = analysis.get("by_goods_category", {}).get(cat, {})
@@ -448,6 +527,7 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
   <div class="tabs">
     <div class="tab active" onclick="switchTab('planning', this)">기획서</div>
     <div class="tab" onclick="switchTab('draft', this)">등록 초안</div>
+    {'<div class="tab" onclick="switchTab(\'image\', this)">이미지 가이드</div>' if image_guide_md else ''}
   </div>
 
   <div id="tab-planning" class="tab-content active">
@@ -456,6 +536,7 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
   <div id="tab-draft" class="tab-content">
     <div class="md-body" id="draft-content"></div>
   </div>
+  {'<div id="tab-image" class="tab-content"><div class="md-body" id="image-content"></div></div>' if image_guide_md else ''}
 </div>
 
 <div class="toast" id="toast">복사됐습니다!</div>
@@ -468,9 +549,11 @@ def _build_html_from_reports(concept: dict, planning_md: str, draft_md: str, ana
 <script>
 const planningMd = {json.dumps(planning_md, ensure_ascii=False)};
 const draftMd = {json.dumps(draft_md, ensure_ascii=False)};
+const imageGuideMd = {json.dumps(image_guide_md or '', ensure_ascii=False)};
 
 document.getElementById('planning-content').innerHTML = marked.parse(planningMd);
 document.getElementById('draft-content').innerHTML = marked.parse(draftMd);
+if (imageGuideMd) document.getElementById('image-content').innerHTML = marked.parse(imageGuideMd);
 
 function switchTab(id, el) {{
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -585,12 +668,8 @@ def run_launch_advisor(
     similar = _get_similar_projects(processed_dir, top_concept.get("goods_category", ""))
     logger.info(f"유사 성공 사례: {len(similar)}개")
 
-    # ── Step 2+3+4: 기획서 + 등록 초안 + SNS 병렬 생성 ──────────────
-    logger.info("Step2+3+4: 기획서 + 등록 초안 + SNS 카피 병렬 생성 중...")
-
-    planning_md = None
-    draft_md = None
-    sns_content = None
+    # ── Step 2+3+4+5: 기획서 + 등록 초안 + 이미지 가이드 + SNS 병렬 생성 ──
+    logger.info("Step2+3+4+5: 기획서 + 등록 초안 + 이미지 가이드 + SNS 카피 병렬 생성 중...")
 
     def _gen_planning():
         return call_claude(
@@ -604,16 +683,23 @@ def run_launch_advisor(
             model=model, max_tokens=4000,
         )
 
+    def _gen_image_guide():
+        return call_claude(
+            _build_image_guide_prompt(top_concept),
+            model=model, max_tokens=4000,
+        )
+
     def _gen_sns():
         return call_claude(
             _build_sns_prompt(top_concept),
             model=model, max_tokens=1000,
         )
 
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {
             executor.submit(_gen_planning): "planning",
             executor.submit(_gen_draft): "draft",
+            executor.submit(_gen_image_guide): "image_guide",
             executor.submit(_gen_sns): "sns",
         }
         results = {}
@@ -627,6 +713,7 @@ def run_launch_advisor(
 
     planning_md = results.get("planning")
     draft_md = results.get("draft")
+    image_guide_md = results.get("image_guide")
     sns_content = results.get("sns")
 
     # ── 기획서 저장 ───────────────────────────────────────────────────
@@ -647,12 +734,24 @@ def run_launch_advisor(
     else:
         logger.error("등록 초안 생성 실패")
 
-    # ── Step 5: GitHub Pages용 HTML 생성 (실제 수치 기반) ────────────
-    logger.info("Step5: GitHub Pages HTML 생성 중...")
+    # ── 이미지 가이드 저장 ────────────────────────────────────────────
+    if image_guide_md:
+        image_guide_path = os.path.join(output_dir, f"image_guide_{date_str}.md")
+        with open(image_guide_path, "w", encoding="utf-8") as f:
+            f.write(image_guide_md)
+        logger.info(f"이미지 가이드 저장: {image_guide_path}")
+    else:
+        logger.warning("이미지 가이드 생성 실패")
+
+    # ── Step 6: GitHub Pages용 HTML 생성 (실제 수치 기반) ────────────
+    logger.info("Step6: GitHub Pages HTML 생성 중...")
     os.makedirs(pages_dir, exist_ok=True)
 
     if planning_md and draft_md:
-        html_content = _build_html_from_reports(top_concept, planning_md, draft_md, analysis, all_concepts=concepts)
+        html_content = _build_html_from_reports(
+            top_concept, planning_md, draft_md, analysis,
+            all_concepts=concepts, image_guide_md=image_guide_md,
+        )
         html_path = os.path.join(pages_dir, f"funding_page_{date_str}.html")
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
