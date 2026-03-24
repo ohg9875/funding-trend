@@ -35,6 +35,10 @@ if __name__ == "__main__":
     if result.get("warnings"):
         print(f"경고: {result['warnings']}")
 
+    if result["status"] == "failed":
+        print("파이프라인 실패 — 종료 코드 1")
+        sys.exit(1)
+
     # GitHub Pages 배포 (CI 환경 또는 --deploy 플래그)
     if os.getenv("CI") or "--deploy" in sys.argv:
         from scripts.deploy_pages import deploy_to_pages

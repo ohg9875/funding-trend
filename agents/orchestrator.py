@@ -124,15 +124,83 @@ def run_pipeline(config_path: str = "config.yaml") -> dict:
         results["wadiz"] = _collect_wadiz() or []
         log["wadiz"].update({"count": len(results["wadiz"]), "duration_sec": round(time.time() - t0, 1)})
 
-    # ── 양쪽 모두 0건이면 즉시 중단 ─────────────────────────────────
+    # ── 양쪽 모두 0건이면 캐시 fallback 시도, 없으면 중단 ───────────
     if not results["tumblbug"] and not results["wadiz"]:
-        msg = "텀블벅·와디즈 모두 0건 — 파이프라인 중단"
-        logger.error(msg)
-        log["status"] = "failed"
-        log["warnings"].append(msg)
-        log["finished_at"] = datetime.now().isoformat()
-        _save_log(log, raw_dir)
-        return log
+        import glob as _glob
+        cached = sorted(
+            _glob.glob(os.path.join(processed_dir, "trend_analysis_*.json")),
+            reverse=True,
+        )
+        if cached:
+            msg = f"수집 0건 — 캐시된 분석 데이터 사용: {os.path.basename(cached[0])}"
+            logger.warning(msg)
+            log["warnings"].append(msg)
+            log["cache_fallback"] = cached[0]
+            # 수집·전처리·분석 단계 건너뛰고 바로 Step 4로 점프
+            log["status"] = "success"
+            log["finished_at"] = datetime.now().isoformat()
+
+            def _run_reporter_fallback():
+                from agents.reporter import run_reporter
+                return run_reporter(
+                    processed_dir=processed_dir,
+                    output_dir=reports_dir,
+                    model=cfg.get("reporter", {}).get("model", "claude-sonnet-4-20250514"),
+                    max_tokens=int(cfg.get("reporter", {}).get("max_tokens", 2000)),
+                )
+
+            def _run_advisor_fallback():
+                from agents.launch_advisor import run_launch_advisor
+                advisor_cfg_fb = cfg.get("launch_advisor", {})
+                return run_launch_advisor(
+                    processed_dir=processed_dir,
+                    output_dir=reports_dir,
+                    model=advisor_cfg_fb.get("model", "claude-sonnet-4-20250514"),
+                    max_tokens=int(advisor_cfg_fb.get("max_tokens", 4000)),
+                    concepts_count=int(advisor_cfg_fb.get("concepts_count", 3)),
+                )
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                f_r = executor.submit(_run_reporter_fallback)
+                f_a = executor.submit(_run_advisor_fallback)
+                for future, label in [(f_r, "reporter"), (f_a, "launch_advisor")]:
+                    try:
+                        result = future.result()
+                        if label == "reporter":
+                            log["report_path"] = result
+                        else:
+                            log["advisor_path"] = result
+                    except Exception as e:
+                        logger.error(f"[{label}] 실패: {e}")
+                        log["warnings"].append(f"{label} 실패: {e}")
+
+            log["status"] = "partial_success" if log["warnings"] else "success"
+            log["finished_at"] = datetime.now().isoformat()
+            _save_log(log, raw_dir)
+
+            notify_cfg = cfg.get("notify", {})
+            if notify_cfg.get("enabled", True):
+                try:
+                    from utils.notifier import send_slack_notification
+                    webhook_env = notify_cfg.get("slack_webhook_url_env", "SLACK_WEBHOOK_URL")
+                    send_slack_notification(
+                        log,
+                        processed_dir=processed_dir,
+                        reports_dir=reports_dir,
+                        webhook_url=os.getenv(webhook_env, ""),
+                    )
+                except Exception as e:
+                    logger.warning(f"슬랙 알림 오류: {e}")
+
+            return log
+        else:
+            msg = "텀블벅·와디즈 모두 0건, 캐시도 없음 — 파이프라인 중단"
+            logger.error(msg)
+            log["status"] = "failed"
+            log["warnings"].append(msg)
+            log["finished_at"] = datetime.now().isoformat()
+            _save_log(log, raw_dir)
+            return log
 
     if not results["tumblbug"] and tumblbug_enabled:
         log["warnings"].append("텀블벅 0건 — 와디즈 단독 진행")

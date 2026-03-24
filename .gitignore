@@ -2,7 +2,7 @@
 __pycache__/
 *.pyc
 data/raw/
-data/processed/
-data/reports/
 data/pages/
 .playwright/
+pipeline.log
+=2023.3
