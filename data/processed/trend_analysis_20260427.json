@@ -1,0 +1,613 @@
+{
+  "by_goods_category": {
+    "기타": {
+      "count": 2793,
+      "success_rate_pct": 90.8,
+      "achieved_rate": {
+        "mean": 2315.2,
+        "median": 1557.0,
+        "count": 2793
+      },
+      "backers": {
+        "mean": 333.0,
+        "median": 153.0,
+        "count": 2793
+      },
+      "raised_amount": {
+        "mean": 23264559.6,
+        "median": 10128000.0,
+        "count": 2793
+      },
+      "avg_trend_score": 61.75,
+      "saturation_inv": 0.0,
+      "early_success_count": 16
+    },
+    "데스크소품": {
+      "count": 46,
+      "success_rate_pct": 87.0,
+      "achieved_rate": {
+        "mean": 1681.3,
+        "median": 1201.0,
+        "count": 46
+      },
+      "backers": {
+        "mean": 243.3,
+        "median": 148.0,
+        "count": 46
+      },
+      "raised_amount": {
+        "mean": 12968592.9,
+        "median": 6581250.0,
+        "count": 46
+      },
+      "avg_trend_score": 61.48,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "문구": {
+      "count": 106,
+      "success_rate_pct": 93.4,
+      "achieved_rate": {
+        "mean": 2084.5,
+        "median": 1463.5,
+        "count": 106
+      },
+      "backers": {
+        "mean": 550.7,
+        "median": 281.5,
+        "count": 106
+      },
+      "raised_amount": {
+        "mean": 20612155.3,
+        "median": 10909850.0,
+        "count": 106
+      },
+      "avg_trend_score": 63.68,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "뱃지": {
+      "count": 21,
+      "success_rate_pct": 100.0,
+      "achieved_rate": {
+        "mean": 2548.3,
+        "median": 1706.0,
+        "count": 21
+      },
+      "backers": {
+        "mean": 861.4,
+        "median": 665.0,
+        "count": 21
+      },
+      "raised_amount": {
+        "mean": 18739060.4,
+        "median": 12494000.0,
+        "count": 21
+      },
+      "avg_trend_score": 75.37,
+      "saturation_inv": 30.0,
+      "early_success_count": 0
+    },
+    "아크릴": {
+      "count": 4,
+      "success_rate_pct": 100.0,
+      "achieved_rate": {
+        "mean": 3646.2,
+        "median": 2218.5,
+        "count": 4
+      },
+      "backers": {
+        "mean": 489.0,
+        "median": 434.0,
+        "count": 4
+      },
+      "raised_amount": {
+        "mean": 47583950.0,
+        "median": 47321000.0,
+        "count": 4
+      },
+      "avg_trend_score": 81.98,
+      "saturation_inv": 86.7,
+      "early_success_count": 0
+    },
+    "의류": {
+      "count": 30,
+      "success_rate_pct": 86.7,
+      "achieved_rate": {
+        "mean": 2464.1,
+        "median": 1596.5,
+        "count": 30
+      },
+      "backers": {
+        "mean": 390.7,
+        "median": 250.5,
+        "count": 30
+      },
+      "raised_amount": {
+        "mean": 27579375.0,
+        "median": 17214150.0,
+        "count": 30
+      },
+      "avg_trend_score": 59.72,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "인테리어": {
+      "count": 39,
+      "success_rate_pct": 89.7,
+      "achieved_rate": {
+        "mean": 2036.4,
+        "median": 1546.0,
+        "count": 39
+      },
+      "backers": {
+        "mean": 355.7,
+        "median": 138.0,
+        "count": 39
+      },
+      "raised_amount": {
+        "mean": 13148210.2,
+        "median": 13887000.0,
+        "count": 39
+      },
+      "avg_trend_score": 62.43,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "인형": {
+      "count": 318,
+      "success_rate_pct": 97.2,
+      "achieved_rate": {
+        "mean": 2244.3,
+        "median": 1295.0,
+        "count": 318
+      },
+      "backers": {
+        "mean": 702.7,
+        "median": 226.5,
+        "count": 318
+      },
+      "raised_amount": {
+        "mean": 66558642.7,
+        "median": 15027250.0,
+        "count": 318
+      },
+      "avg_trend_score": 64.25,
+      "saturation_inv": 0.0,
+      "early_success_count": 1
+    },
+    "키링": {
+      "count": 51,
+      "success_rate_pct": 90.2,
+      "achieved_rate": {
+        "mean": 2279.0,
+        "median": 1549.0,
+        "count": 51
+      },
+      "backers": {
+        "mean": 778.3,
+        "median": 268.0,
+        "count": 51
+      },
+      "raised_amount": {
+        "mean": 34925806.6,
+        "median": 10094900.0,
+        "count": 51
+      },
+      "avg_trend_score": 63.0,
+      "saturation_inv": 0.0,
+      "early_success_count": 2
+    },
+    "테크": {
+      "count": 70,
+      "success_rate_pct": 87.1,
+      "achieved_rate": {
+        "mean": 2196.3,
+        "median": 1159.5,
+        "count": 70
+      },
+      "backers": {
+        "mean": 251.6,
+        "median": 109.0,
+        "count": 70
+      },
+      "raised_amount": {
+        "mean": 26016835.7,
+        "median": 11834800.0,
+        "count": 70
+      },
+      "avg_trend_score": 60.08,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "파우치": {
+      "count": 70,
+      "success_rate_pct": 95.7,
+      "achieved_rate": {
+        "mean": 2861.3,
+        "median": 2239.5,
+        "count": 70
+      },
+      "backers": {
+        "mean": 301.6,
+        "median": 203.5,
+        "count": 70
+      },
+      "raised_amount": {
+        "mean": 19859149.3,
+        "median": 12429050.0,
+        "count": 70
+      },
+      "avg_trend_score": 65.46,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "푸드": {
+      "count": 609,
+      "success_rate_pct": 98.7,
+      "achieved_rate": {
+        "mean": 2325.1,
+        "median": 1658.0,
+        "count": 609
+      },
+      "backers": {
+        "mean": 270.9,
+        "median": 143.0,
+        "count": 609
+      },
+      "raised_amount": {
+        "mean": 18001957.7,
+        "median": 9478000.0,
+        "count": 609
+      },
+      "avg_trend_score": 67.24,
+      "saturation_inv": 0.0,
+      "early_success_count": 4
+    }
+  },
+  "by_platform": {
+    "tumblbug": {
+      "count": 900,
+      "success_rate_pct": 95.3,
+      "achieved_rate": {
+        "mean": 2485.6,
+        "median": 1998.0,
+        "count": 900
+      },
+      "backers": {
+        "mean": 626.1,
+        "median": 315.0,
+        "count": 900
+      }
+    },
+    "wadiz": {
+      "count": 3259,
+      "success_rate_pct": 91.7,
+      "achieved_rate": {
+        "mean": 2255.4,
+        "median": 1208.0,
+        "count": 3259
+      },
+      "backers": {
+        "mean": 293.2,
+        "median": 127.0,
+        "count": 3259
+      }
+    }
+  },
+  "top_projects": [
+    {
+      "title": "고양이 해적 패키지 (에코백, 뱃지, 달력)",
+      "creator": "크림히어로즈",
+      "link": "https://tumblbug.com/projects/creamheroes_500k",
+      "platform": "tumblbug",
+      "goods_category": "에코백",
+      "achieved_rate": 1307.0,
+      "backers": 6811,
+      "raised_amount": 130771566,
+      "early_success": false,
+      "trend_score": 88.66
+    },
+    {
+      "title": "진열대 유목민 종착지, 만능 아크릴 진열대",
+      "creator": "아무로키",
+      "link": "https://tumblbug.com/projects/amuroki",
+      "platform": "tumblbug",
+      "goods_category": "아크릴",
+      "achieved_rate": 4015.0,
+      "backers": 119,
+      "raised_amount": 20079000,
+      "early_success": false,
+      "trend_score": 87.34
+    },
+    {
+      "title": "&lt;와디즈단독&gt; ‘아따맘마’ 한국공식굿즈! 다이어리&amp;아크릴굿즈 도레미↘솔↗",
+      "creator": "루프스튜디오",
+      "link": "https://www.wadiz.kr/web/campaign/detail/373303",
+      "platform": "wadiz",
+      "goods_category": "아크릴",
+      "achieved_rate": 9999.0,
+      "backers": 1011,
+      "raised_amount": 87252800,
+      "early_success": false,
+      "trend_score": 87.34
+    },
+    {
+      "title": "[명탐정 코난]TV판 한국 공식 굿즈 &lt;DIY 북눅 무드등&amp;아크릴스탠드&gt;",
+      "creator": "튜나페이퍼",
+      "link": "https://www.wadiz.kr/web/campaign/detail/261002",
+      "platform": "wadiz",
+      "goods_category": "아크릴",
+      "achieved_rate": 422.0,
+      "backers": 77,
+      "raised_amount": 8441000,
+      "early_success": false,
+      "trend_score": 83.44
+    },
+    {
+      "title": "[과학동아40주년] 슈뢰딩거의 고양이 뱃지",
+      "creator": "헤일메리",
+      "link": "https://tumblbug.com/projects/dead_and_alive",
+      "platform": "tumblbug",
+      "goods_category": "뱃지",
+      "achieved_rate": 9999.0,
+      "backers": 3569,
+      "raised_amount": 104344000,
+      "early_success": false,
+      "trend_score": 76.0
+    },
+    {
+      "title": "&lt;평화, 새로운 시작 _ 남북정상회담&gt; 뱃지",
+      "creator": "로고마크",
+      "link": "https://tumblbug.com/projects/peacekorea",
+      "platform": "tumblbug",
+      "goods_category": "뱃지",
+      "achieved_rate": 4734.0,
+      "backers": 1781,
+      "raised_amount": 42608000,
+      "early_success": false,
+      "trend_score": 76.0
+    },
+    {
+      "title": "좋은 말 뱃지들 : 하고싶던 말 들",
+      "creator": "강하늘",
+      "link": "https://tumblbug.com/projects/good_sentences",
+      "platform": "tumblbug",
+      "goods_category": "뱃지",
+      "achieved_rate": 4253.0,
+      "backers": 348,
+      "raised_amount": 4253500,
+      "early_success": false,
+      "trend_score": 76.0
+    },
+    {
+      "title": "보호종료아동의 꿈을 담은 버킷백 &amp; 뱃지",
+      "creator": "본비",
+      "link": "https://tumblbug.com/projects/bonvie",
+      "platform": "tumblbug",
+      "goods_category": "뱃지",
+      "achieved_rate": 3928.0,
+      "backers": 734,
+      "raised_amount": 19642508,
+      "early_success": false,
+      "trend_score": 76.0
+    },
+    {
+      "title": "&lt;두 친구 이야기&gt; 대통령 당선일 아침 신문 디자인 뱃지",
+      "creator": "로고마크",
+      "link": "https://tumblbug.com/projects/buddy",
+      "platform": "tumblbug",
+      "goods_category": "뱃지",
+      "achieved_rate": 3739.0,
+      "backers": 1314,
+      "raised_amount": 37395000,
+      "early_success": false,
+      "trend_score": 76.0
+    },
+    {
+      "title": "세상에 모든 길냥이가 행복해지길 &#x27;행복한 길냥이 뱃지&#x27;",
+      "creator": "낭낭 스튜디오",
+      "link": "https://tumblbug.com/projects/inattic_happycat",
+      "platform": "tumblbug",
+      "goods_category": "뱃지",
+      "achieved_rate": 2985.0,
+      "backers": 1829,
+      "raised_amount": 29854055,
+      "early_success": false,
+      "trend_score": 76.0
+    }
+  ],
+  "early_success_projects": [
+    {
+      "title": "[포켓몬 30주년] 전세계 첫 등장, 레노바 포켓몬스터 화장지 최초 공개",
+      "achieved_rate": 9999.0,
+      "backers": 1579,
+      "goods_category": "기타",
+      "platform": "wadiz"
+    },
+    {
+      "title": "[최초공개ㅣ평점 5점 국보시리즈]세상 어디든 걸터앉는 모서리 반가사유상",
+      "achieved_rate": 9999.0,
+      "backers": 243,
+      "goods_category": "기타",
+      "platform": "wadiz"
+    },
+    {
+      "title": "[30분만에 완판] 심슨 컬렉션 마지막 퍼즐 15년 만에 부활! 최초공개",
+      "achieved_rate": 5865.0,
+      "backers": 2828,
+      "goods_category": "기타",
+      "platform": "wadiz"
+    },
+    {
+      "title": "미니청소기는 약하다는 편견, 깨드릴게요. 풀스펙을 담고도 믿기 힘든 가격",
+      "achieved_rate": 2890.0,
+      "backers": 464,
+      "goods_category": "기타",
+      "platform": "wadiz"
+    },
+    {
+      "title": "교도소에서 벌어진 사건을 해결하라! 추리게임 [그곳에 천사가 나타났다]",
+      "achieved_rate": 2729.0,
+      "backers": 321,
+      "goods_category": "기타",
+      "platform": "wadiz"
+    }
+  ],
+  "saturation_warnings": [
+    {
+      "goods_category": "기타",
+      "count": 2793
+    },
+    {
+      "goods_category": "푸드",
+      "count": 609
+    },
+    {
+      "goods_category": "인형",
+      "count": 318
+    },
+    {
+      "goods_category": "문구",
+      "count": 106
+    },
+    {
+      "goods_category": "파우치",
+      "count": 70
+    },
+    {
+      "goods_category": "테크",
+      "count": 70
+    },
+    {
+      "goods_category": "키링",
+      "count": 51
+    },
+    {
+      "goods_category": "데스크소품",
+      "count": 46
+    },
+    {
+      "goods_category": "인테리어",
+      "count": 39
+    },
+    {
+      "goods_category": "의류",
+      "count": 30
+    }
+  ],
+  "summary": {
+    "total_projects": 4159,
+    "success_rate_pct": 92.5,
+    "avg_achieved_rate": 2305.2,
+    "avg_backers": 365.2,
+    "early_success_count": 23,
+    "has_history": true,
+    "goods_category_counts": {
+      "기타": 2793,
+      "푸드": 609,
+      "인형": 318,
+      "문구": 106,
+      "파우치": 70,
+      "테크": 70,
+      "키링": 51,
+      "데스크소품": 46,
+      "인테리어": 39,
+      "의류": 30,
+      "뱃지": 21,
+      "아크릴": 4,
+      "에코백": 2
+    },
+    "platform_counts": {
+      "wadiz": 3259,
+      "tumblbug": 900
+    },
+    "analyzed_at": "2026-04-27T02:55:16.327500"
+  },
+  "week_over_week": {
+    "뱃지": {
+      "current": 75.37,
+      "previous": 71.11,
+      "delta": 4.26,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "데스크소품": {
+      "current": 61.48,
+      "previous": 60.38,
+      "delta": 1.1,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "푸드": {
+      "current": 67.24,
+      "previous": 66.85,
+      "delta": 0.39,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "키링": {
+      "current": 63.0,
+      "previous": 62.62,
+      "delta": 0.38,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "인형": {
+      "current": 64.25,
+      "previous": 63.97,
+      "delta": 0.28,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "문구": {
+      "current": 63.68,
+      "previous": 63.93,
+      "delta": -0.25,
+      "direction": "down",
+      "new_this_week": false
+    },
+    "파우치": {
+      "current": 65.46,
+      "previous": 65.58,
+      "delta": -0.12,
+      "direction": "down",
+      "new_this_week": false
+    },
+    "기타": {
+      "current": 61.75,
+      "previous": 61.65,
+      "delta": 0.1,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "아크릴": {
+      "current": 81.98,
+      "previous": 81.98,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "테크": {
+      "current": 60.08,
+      "previous": 60.08,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "인테리어": {
+      "current": 62.43,
+      "previous": 62.43,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    },
+    "의류": {
+      "current": 59.72,
+      "previous": 59.72,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    }
+  }
+}
