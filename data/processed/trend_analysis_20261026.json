@@ -1,0 +1,483 @@
+{
+  "by_goods_category": {
+    "기타": {
+      "count": 498,
+      "success_rate_pct": 87.1,
+      "achieved_rate": {
+        "mean": 2322.5,
+        "median": 2017.5,
+        "count": 498
+      },
+      "backers": {
+        "mean": 469.9,
+        "median": 261.5,
+        "count": 498
+      },
+      "raised_amount": {
+        "mean": 21505263.1,
+        "median": 11867500.0,
+        "count": 498
+      },
+      "avg_trend_score": 60.87,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "데스크소품": {
+      "count": 4,
+      "success_rate_pct": 100.0,
+      "achieved_rate": {
+        "mean": 2902.2,
+        "median": 2783.5,
+        "count": 4
+      },
+      "backers": {
+        "mean": 477.8,
+        "median": 435.5,
+        "count": 4
+      },
+      "raised_amount": {
+        "mean": 25336902.5,
+        "median": 16856166.5,
+        "count": 4
+      },
+      "avg_trend_score": 87.34,
+      "saturation_inv": 86.7,
+      "early_success_count": 0
+    },
+    "문구": {
+      "count": 75,
+      "success_rate_pct": 92.0,
+      "achieved_rate": {
+        "mean": 2338.3,
+        "median": 1949.0,
+        "count": 75
+      },
+      "backers": {
+        "mean": 555.1,
+        "median": 282.0,
+        "count": 75
+      },
+      "raised_amount": {
+        "mean": 21531156.6,
+        "median": 11063200.0,
+        "count": 75
+      },
+      "avg_trend_score": 62.92,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "뱃지": {
+      "count": 19,
+      "success_rate_pct": 100.0,
+      "achieved_rate": {
+        "mean": 2745.7,
+        "median": 2043.0,
+        "count": 19
+      },
+      "backers": {
+        "mean": 916.3,
+        "median": 668.0,
+        "count": 19
+      },
+      "raised_amount": {
+        "mean": 19647514.1,
+        "median": 12494000.0,
+        "count": 19
+      },
+      "avg_trend_score": 77.34,
+      "saturation_inv": 36.7,
+      "early_success_count": 0
+    },
+    "의류": {
+      "count": 8,
+      "success_rate_pct": 75.0,
+      "achieved_rate": {
+        "mean": 1946.0,
+        "median": 1559.5,
+        "count": 8
+      },
+      "backers": {
+        "mean": 309.8,
+        "median": 171.0,
+        "count": 8
+      },
+      "raised_amount": {
+        "mean": 14111212.5,
+        "median": 8866300.0,
+        "count": 8
+      },
+      "avg_trend_score": 69.96,
+      "saturation_inv": 73.3,
+      "early_success_count": 0
+    },
+    "인테리어": {
+      "count": 7,
+      "success_rate_pct": 85.7,
+      "achieved_rate": {
+        "mean": 2694.1,
+        "median": 1817.0,
+        "count": 7
+      },
+      "backers": {
+        "mean": 1132.7,
+        "median": 819.0,
+        "count": 7
+      },
+      "raised_amount": {
+        "mean": 17813142.7,
+        "median": 14647000.0,
+        "count": 7
+      },
+      "avg_trend_score": 76.77,
+      "saturation_inv": 76.7,
+      "early_success_count": 0
+    },
+    "인형": {
+      "count": 108,
+      "success_rate_pct": 95.4,
+      "achieved_rate": {
+        "mean": 2844.5,
+        "median": 2109.5,
+        "count": 108
+      },
+      "backers": {
+        "mean": 1267.0,
+        "median": 556.5,
+        "count": 108
+      },
+      "raised_amount": {
+        "mean": 140558806.4,
+        "median": 29052250.0,
+        "count": 108
+      },
+      "avg_trend_score": 66.45,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "키링": {
+      "count": 34,
+      "success_rate_pct": 91.2,
+      "achieved_rate": {
+        "mean": 2667.7,
+        "median": 1871.5,
+        "count": 34
+      },
+      "backers": {
+        "mean": 1042.4,
+        "median": 442.5,
+        "count": 34
+      },
+      "raised_amount": {
+        "mean": 43076884.3,
+        "median": 14131650.0,
+        "count": 34
+      },
+      "avg_trend_score": 64.41,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    },
+    "파우치": {
+      "count": 12,
+      "success_rate_pct": 100.0,
+      "achieved_rate": {
+        "mean": 3487.6,
+        "median": 2332.5,
+        "count": 12
+      },
+      "backers": {
+        "mean": 610.1,
+        "median": 379.0,
+        "count": 12
+      },
+      "raised_amount": {
+        "mean": 19060333.6,
+        "median": 12527000.0,
+        "count": 12
+      },
+      "avg_trend_score": 82.0,
+      "saturation_inv": 60.0,
+      "early_success_count": 0
+    },
+    "푸드": {
+      "count": 132,
+      "success_rate_pct": 97.7,
+      "achieved_rate": {
+        "mean": 2610.1,
+        "median": 2174.5,
+        "count": 132
+      },
+      "backers": {
+        "mean": 382.3,
+        "median": 271.0,
+        "count": 132
+      },
+      "raised_amount": {
+        "mean": 14646716.1,
+        "median": 10700250.0,
+        "count": 132
+      },
+      "avg_trend_score": 68.11,
+      "saturation_inv": 0.0,
+      "early_success_count": 0
+    }
+  },
+  "by_platform": {
+    "tumblbug": {
+      "count": 900,
+      "success_rate_pct": 90.7,
+      "achieved_rate": {
+        "mean": 2471.9,
+        "median": 2048.0,
+        "count": 900
+      },
+      "backers": {
+        "mean": 595.9,
+        "median": 297.5,
+        "count": 900
+      }
+    }
+  },
+  "top_projects": [
+    {
+      "title": "진열대 유목민 종착지, 만능 아크릴 진열대",
+      "creator": "아무로키",
+      "link": "https://tumblbug.com/projects/amuroki",
+      "platform": "tumblbug",
+      "goods_category": "아크릴",
+      "achieved_rate": 4015.0,
+      "backers": 119,
+      "raised_amount": 20079000,
+      "early_success": false,
+      "trend_score": 89.34
+    },
+    {
+      "title": "돈,시간을 아끼는 가계부&amp;플래너 갓생KIT",
+      "creator": "먼지네 작업실",
+      "link": "https://tumblbug.com/projects/2025kit",
+      "platform": "tumblbug",
+      "goods_category": "테크",
+      "achieved_rate": 2368.0,
+      "backers": 315,
+      "raised_amount": 11844000,
+      "early_success": false,
+      "trend_score": 88.66
+    },
+    {
+      "title": "TEA전문가 큐가든의 세젤맛 밀크티 2탄!! 밀크티 KIT",
+      "creator": "큐앤리브즈(구, 큐가든)",
+      "link": "https://tumblbug.com/projects/specialmilkteabykewgarden",
+      "platform": "tumblbug",
+      "goods_category": "테크",
+      "achieved_rate": 3884.0,
+      "backers": 414,
+      "raised_amount": 19423500,
+      "early_success": false,
+      "trend_score": 88.66
+    },
+    {
+      "title": "[최초공개] 딱따구리의 숲 연필꽂이",
+      "creator": "피그랩(PIGLAB)",
+      "link": "https://tumblbug.com/projects/piglab_forestproject_02",
+      "platform": "tumblbug",
+      "goods_category": "데스크소품",
+      "achieved_rate": 4061.0,
+      "backers": 412,
+      "raised_amount": 20306300,
+      "early_success": false,
+      "trend_score": 87.34
+    },
+    {
+      "title": "작은 기록을 소중히 보관하는 공간, 메모 오거나이저",
+      "creator": "woothic",
+      "link": "https://tumblbug.com/projects/woothicstudio",
+      "platform": "tumblbug",
+      "goods_category": "데스크소품",
+      "achieved_rate": 2886.0,
+      "backers": 805,
+      "raised_amount": 57729777,
+      "early_success": false,
+      "trend_score": 87.34
+    },
+    {
+      "title": "DAM : 데스크 위 경복궁 오브제",
+      "creator": "DAM STUDIO",
+      "link": "https://tumblbug.com/projects/damstudio-pj1",
+      "platform": "tumblbug",
+      "goods_category": "데스크소품",
+      "achieved_rate": 2681.0,
+      "backers": 459,
+      "raised_amount": 13406033,
+      "early_success": false,
+      "trend_score": 87.34
+    },
+    {
+      "title": "책상 위에 띄워봐요, 당신이 사랑하는 제주의 파도를.",
+      "creator": "ilang 일랑",
+      "link": "https://tumblbug.com/projects/ilang03",
+      "platform": "tumblbug",
+      "goods_category": "데스크소품",
+      "achieved_rate": 1981.0,
+      "backers": 235,
+      "raised_amount": 9905500,
+      "early_success": false,
+      "trend_score": 87.34
+    },
+    {
+      "title": "월별구분없이 한번에 정리하는 2023 포스터달력",
+      "creator": "PAW STUDIO",
+      "link": "https://tumblbug.com/projects/2023postercalendar",
+      "platform": "tumblbug",
+      "goods_category": "인테리어",
+      "achieved_rate": 7333.0,
+      "backers": 2619,
+      "raised_amount": 36667000,
+      "early_success": false,
+      "trend_score": 85.34
+    },
+    {
+      "title": "매일의 마음이 모여 완성되는 &#x27;1년 마음 포스터&#x27;",
+      "creator": "한곰곰",
+      "link": "https://tumblbug.com/projects/hangomgom_project",
+      "platform": "tumblbug",
+      "goods_category": "인테리어",
+      "achieved_rate": 4500.0,
+      "backers": 1890,
+      "raised_amount": 27004500,
+      "early_success": false,
+      "trend_score": 85.34
+    },
+    {
+      "title": "매일의 마음이 모여 완성되는 2023 &#x27;1년 마음 포스터&#x27;",
+      "creator": "한곰곰",
+      "link": "https://tumblbug.com/projects/2023_mindposter",
+      "platform": "tumblbug",
+      "goods_category": "인테리어",
+      "achieved_rate": 2314.0,
+      "backers": 780,
+      "raised_amount": 13887000,
+      "early_success": false,
+      "trend_score": 85.34
+    }
+  ],
+  "early_success_projects": [],
+  "saturation_warnings": [
+    {
+      "goods_category": "기타",
+      "count": 498
+    },
+    {
+      "goods_category": "푸드",
+      "count": 132
+    },
+    {
+      "goods_category": "인형",
+      "count": 108
+    },
+    {
+      "goods_category": "문구",
+      "count": 75
+    },
+    {
+      "goods_category": "키링",
+      "count": 34
+    }
+  ],
+  "summary": {
+    "total_projects": 900,
+    "success_rate_pct": 90.7,
+    "avg_achieved_rate": 2471.9,
+    "avg_backers": 595.9,
+    "early_success_count": 0,
+    "has_history": true,
+    "goods_category_counts": {
+      "기타": 498,
+      "푸드": 132,
+      "인형": 108,
+      "문구": 75,
+      "키링": 34,
+      "뱃지": 19,
+      "파우치": 12,
+      "의류": 8,
+      "인테리어": 7,
+      "데스크소품": 4,
+      "테크": 2,
+      "아크릴": 1
+    },
+    "platform_counts": {
+      "tumblbug": 900
+    },
+    "analyzed_at": "2026-10-26T03:35:07.683024"
+  },
+  "week_over_week": {
+    "데스크소품": {
+      "current": 87.34,
+      "previous": 74.87,
+      "delta": 12.47,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "의류": {
+      "current": 69.96,
+      "previous": 64.25,
+      "delta": 5.71,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "인테리어": {
+      "current": 76.77,
+      "previous": 71.17,
+      "delta": 5.6,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "기타": {
+      "current": 60.87,
+      "previous": 62.28,
+      "delta": -1.41,
+      "direction": "down",
+      "new_this_week": false
+    },
+    "키링": {
+      "current": 64.41,
+      "previous": 65.7,
+      "delta": -1.29,
+      "direction": "down",
+      "new_this_week": false
+    },
+    "문구": {
+      "current": 62.92,
+      "previous": 62.19,
+      "delta": 0.73,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "파우치": {
+      "current": 82.0,
+      "previous": 81.34,
+      "delta": 0.66,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "인형": {
+      "current": 66.45,
+      "previous": 66.33,
+      "delta": 0.12,
+      "direction": "up",
+      "new_this_week": false
+    },
+    "푸드": {
+      "current": 68.11,
+      "previous": 68.14,
+      "delta": -0.03,
+      "direction": "down",
+      "new_this_week": false
+    },
+    "뱃지": {
+      "current": 77.34,
+      "previous": 77.34,
+      "delta": 0.0,
+      "direction": "flat",
+      "new_this_week": false
+    }
+  }
+}
